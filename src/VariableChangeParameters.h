@@ -10,7 +10,7 @@
 #include "oops/base/VariableChangeParametersBase.h"
 #include "oops/util/Printable.h"
 
-namespace quench {
+namespace genint {
 
 // -------------------------------------------------------------------------------------------------
 /// \brief Parameters passed to the VariableChange class.
@@ -22,4 +22,4 @@ class VariableChangeParameters : public oops::VariableChangeParametersBase {
 
 // -------------------------------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

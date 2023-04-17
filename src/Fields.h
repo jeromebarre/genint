@@ -21,7 +21,7 @@
 #include "oops/util/Printable.h"
 #include "oops/util/Serializable.h"
 
-namespace quench {
+namespace genint {
   class Geometry;
 
 // -----------------------------------------------------------------------------
@@ -30,7 +30,7 @@ class Fields : public util::Printable,
                public util::Serializable,
                private util::ObjectCounter<Fields> {
  public:
-  static const std::string classname() {return "quench::Fields";}
+  static const std::string classname() {return "genint::Fields";}
 
 // Constructors
   Fields(const Geometry &, const oops::Variables &, const util::DateTime &);
@@ -82,4 +82,4 @@ class Fields : public util::Printable,
 };
 // -----------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

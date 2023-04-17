@@ -1,0 +1,58 @@
+# (C) Copyright 2017-2022 UCAR
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+
+## cmake functions
+
+#link_files(src_dir dest_dir files..) -Link selected files from source dir to build dir
+# Args:
+#  src_dir: Full path to source directory
+#  dest_dir: Full path to target directory
+#  files: A list of file names to link relative to this source dir
+macro(link_files src_dir dest_dir)
+    foreach(_f IN ITEMS ${ARGN})
+        execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${src_dir}/${_f} ${dest_dir}/${_f})
+    endforeach()
+endmacro()
+
+
+# Use external jedi-cmake or bundle build
+if(DEFINED ENV{jedi_cmake_ROOT})
+  include( $ENV{jedi_cmake_ROOT}/share/jedicmake/Functions/git_functions.cmake )
+else()
+  include( ${CMAKE_SOURCE_DIR}/jedicmake/cmake/Functions/git_functions.cmake )
+endif()
+
+
+# Create the Data/ directory
+# --------------------------
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
+
+# config files (to be filled later)
+# ----------------
+#list( APPEND config_test_files
+#)
+
+# Test input scripts
+# ------------------
+list( APPEND genint_testinput
+testinput/convertstate.yaml
+)
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
+#LINK_FILES( "${genint_testinput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+link_files(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${genint_testinput})
+
+# Create tests
+# ------------
+
+# Executables
+# add test specific execs later
+
+# Interface tests
+# ---------------
+ecbuild_add_test( TARGET   genint_test_convertstate
+                  MPI      6
+                  ARGS     testinput/convertstate.yaml
+                  COMMAND  genint_convertstate.x )

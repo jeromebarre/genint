@@ -1,0 +1,31 @@
+input geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    N: 90
+  groups:
+  - variables:
+    - SpeciesConc_NO2
+    - SpeciesConc_CO
+    levels: 72
+  halo: 1
+output geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    N: 10
+  groups:
+  - variables:
+    - SpeciesConc_NO2
+    - SpeciesConc_CO
+    levels: 72
+  halo: 1
+states:
+- input:
+    state variables:
+    - SpeciesConc_NO2
+    - SpeciesConc_CO
+    filepath: /Users/jeromebarre/backgrounds/GEOS-CF/geos_cf_N90.20210801_0000z
+    date: '2021-08-01T00:00:00Z'
+  output:
+    filepath: /Users/jeromebarre/backgrounds/GEOS-CF/geos_cf_N10.20210801_0000z

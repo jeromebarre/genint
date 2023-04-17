@@ -11,6 +11,6 @@
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
-  saber::ErrorCovarianceTraining<quench::Traits> dir;
+  saber::ErrorCovarianceTraining<genint::Traits> dir;
   return run.execute(dir);
 }

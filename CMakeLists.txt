@@ -9,9 +9,9 @@
 
 cmake_minimum_required( VERSION 3.12 )
 
-project( quobs VERSION 1.5.0 LANGUAGES CXX Fortran )
+project( genint VERSION 1.5.0 LANGUAGES CXX Fortran )
 
-option(OPENMP "Build quobs with OpenMP support" ON)
+option(OPENMP "Build genint with OpenMP support" ON)
 
 ## Ecbuild integration
 find_package( ecbuild QUIET )
@@ -21,9 +21,9 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 set( CMAKE_DIRECTORY_LABELS ${PROJECT_NAME} )
 
 ## Configuration options
-option( ENABLE_QUOBS_INSTRUMENTATION "Enable QUOBS instrumentation" OFF )
-option( ENABLE_OFFLINE_CODECOV "Enable QUOBS offline code coverage" OFF )
-option( ENABLE_QUOBS_DOC "Enable QUOBS documentation" OFF )
+option( ENABLE_GENINT_INSTRUMENTATION "Enable GENINT instrumentation" OFF )
+option( ENABLE_OFFLINE_CODECOV "Enable GENINT offline code coverage" OFF )
+option( ENABLE_GENINT_DOC "Enable GENINT documentation" OFF )
 option( ENABLE_MKL "Use MKL for LAPACK implementation (if available)" ON )
 include( ${PROJECT_NAME}_compiler_flags )
 
@@ -39,6 +39,18 @@ find_package( eckit 1.11.6 REQUIRED COMPONENTS MPI )
 find_package( fckit 0.7.0  REQUIRED )
 find_package( atlas 0.30.0 REQUIRED COMPONENTS OMP_Fortran )
 
+# oops
+find_package( oops 1.3.0 REQUIRED )
+
+# saber
+find_package( saber 1.3.0 REQUIRED )
+
+# crtm
+find_package( crtm 2.2.3 REQUIRED )
+
+# ufo
+find_package( ufo 1.3.0 REQUIRED )
+
 if( ENABLE_MKL )
     find_package( MKL )
 endif()
@@ -48,19 +60,17 @@ else()
     find_package( LAPACK REQUIRED )
 endif()
 
-# Optionals
-find_package( oops QUIET )
 find_package( gsibec 1.0.6 QUIET )
 find_package( vader QUIET )
 
 
 ## SABER instrumentation
-if( ENABLE_QUOBS_INSTRUMENTATION )
-    message( STATUS "QUOBS instrumentation is enabled" )
-    add_definitions(-DENABLE_QUOBS_INSTRUMENTATION=1)
+if( ENABLE_GENINT_INSTRUMENTATION )
+    message( STATUS "GENINT instrumentation is enabled" )
+    add_definitions(-DENABLE_GENINT_INSTRUMENTATION=1)
 else()
-    message( STATUS "QUOBS instrumentation is not enabled" )
-    add_definitions(-DENABLE_QUOBS_INSTRUMENTATION=0)
+    message( STATUS "GENINT instrumentation is not enabled" )
+    add_definitions(-DENABLE_GENINT_INSTRUMENTATION=0)
 endif()
 
 
@@ -78,21 +88,21 @@ endif()
 ## Sources
 add_subdirectory( src )
 add_subdirectory( mains )
-#add_subdirectory( test )
+add_subdirectory( test )
 
 ## Global tests
-ecbuild_add_test( TARGET quobs_coding_norms_src
-                  TYPE SCRIPT
-                  COMMAND ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}_cpplint.py
-                  ARGS --quiet --recursive ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/src )
-                  
-#ecbuild_add_test( TARGET quobs_coding_norms_test
+#ecbuild_add_test( TARGET genint_coding_norms_src
+#                  TYPE SCRIPT
+#                  COMMAND ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}_cpplint.py
+#                  ARGS --quiet --recursive ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/src )
+
+#ecbuild_add_test( TARGET genint_coding_norms_test
 #                  TYPE SCRIPT
 #                  COMMAND ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}_cpplint.py
 #                  ARGS --quiet --recursive ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/test )
 
-# Setup QUENCH data links
-message( STATUS "Setup QUENCH data links" )
+# Setup GENINT data links
+message( STATUS "Setup GENINT data links" )
 file( REMOVE_RECURSE ${CMAKE_CURRENT_BINARY_DIR}/data )
 file( MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data )
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink

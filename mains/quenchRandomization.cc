@@ -12,7 +12,7 @@
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
-  saber::instantiateCovarFactory<quench::Traits>();
-  saber::Randomization<quench::Traits> dir;
+  saber::instantiateCovarFactory<genint::Traits>();
+  saber::Randomization<genint::Traits> dir;
   return run.execute(dir);
 }

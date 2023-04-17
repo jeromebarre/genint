@@ -18,7 +18,7 @@
 #include "src/Fields.h"
 #include "src/Increment.h"
 
-namespace quench {
+namespace genint {
   class Geometry;
   class Increment;
 
@@ -27,7 +27,7 @@ namespace quench {
 class State : public util::Printable,
                 private util::ObjectCounter<State> {
  public:
-  static const std::string classname() {return "quench::State";}
+  static const std::string classname() {return "genint::State";}
 
 /// Constructor, destructor
   State(const Geometry &, const oops::Variables &, const util::DateTime &);
@@ -69,4 +69,4 @@ class State : public util::Printable,
 };
 // -----------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

@@ -29,7 +29,7 @@
 #include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/Printable.h"
 
-namespace quench {
+namespace genint {
 
 // -----------------------------------------------------------------------------
 /// Group parameters
@@ -54,7 +54,7 @@ class GroupParameters : public oops::Parameters {
   oops::Parameter<std::string> maskType{"mask type", "none", this};
 
   /// Mask path
-  oops::Parameter<std::string> maskPath{"mask path", "../quench/data/landsea.nc", this};
+  oops::Parameter<std::string> maskPath{"mask path", "../genint/data/landsea.nc", this};
 };
 
 // -----------------------------------------------------------------------------
@@ -91,7 +91,7 @@ class Geometry : public util::Printable,
  public:
   typedef GeometryParameters Parameters_;
 
-  static const std::string classname() {return "quench::Geometry";}
+  static const std::string classname() {return "genint::Geometry";}
 
   Geometry(const Parameters_ &,
            const eckit::mpi::Comm & comm = oops::mpi::world());
@@ -145,4 +145,4 @@ class Geometry : public util::Printable,
 };
 // -----------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

@@ -16,16 +16,16 @@
 #include "src/State.h"
 #include "src/VariableChangeParameters.h"
 
-namespace quench {
+namespace genint {
   class State;
 
 // -----------------------------------------------------------------------------
-/// quench change of variable
+/// genint change of variable
 
 class VariableChange : public util::Printable {
  public:
   typedef VariableChangeParameters Parameters_;
-  static const std::string classname() {return "quench::VariableChange";}
+  static const std::string classname() {return "genint::VariableChange";}
 
   VariableChange(const Parameters_ &, const Geometry &) {}
 
@@ -38,4 +38,4 @@ class VariableChange : public util::Printable {
 };
 // -----------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

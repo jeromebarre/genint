@@ -16,7 +16,7 @@
 
 #include "src/Fields.h"
 
-namespace quench {
+namespace genint {
 
 // -----------------------------------------------------------------------------
 /// Constructor, destructor
@@ -148,4 +148,4 @@ void Increment::print(std::ostream & os) const {
 }
 // -----------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

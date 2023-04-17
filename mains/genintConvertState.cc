@@ -11,6 +11,6 @@
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
-  oops::ConvertState<quench::Traits> cs;
+  oops::ConvertState<genint::Traits> cs;
   return run.execute(cs);
 }

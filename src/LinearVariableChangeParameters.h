@@ -9,7 +9,7 @@
 
 #include "oops/base/LinearVariableChangeParametersBase.h"
 
-namespace quench {
+namespace genint {
 
 // -------------------------------------------------------------------------------------------------
 /// \brief Parameters passed to the LinearVariableChange class.
@@ -21,4 +21,4 @@ class LinearVariableChangeParameters : public oops::LinearVariableChangeParamete
 
 // -------------------------------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

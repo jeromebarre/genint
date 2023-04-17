@@ -12,16 +12,16 @@
 #include "src/LinearVariableChange.h"
 #include "src/TraitsFwd.h"
 
-namespace quench {
+namespace genint {
 // -----------------------------------------------------------------------------
 /// \brief Parameters passed to the Covariance class.
 
-class CovarianceParameters : public oops::ModelSpaceCovarianceParametersBase<quench::Traits>{
+class CovarianceParameters : public oops::ModelSpaceCovarianceParametersBase<genint::Traits>{
   OOPS_CONCRETE_PARAMETERS(CovarianceParameters,
-                           oops::ModelSpaceCovarianceParametersBase<quench::Traits>)
+                           oops::ModelSpaceCovarianceParametersBase<genint::Traits>)
 
  public:
 };
 // -----------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

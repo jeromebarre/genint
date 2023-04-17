@@ -17,19 +17,19 @@
 #include "src/CovarianceParameters.h"
 #include "src/Geometry.h"
 
-namespace quench {
+namespace genint {
   class Increment;
   class State;
 
 // -----------------------------------------------------------------------------
-/// Background error covariance matrix for quench model.
+/// Background error covariance matrix for genint model.
 
 class Covariance : public util::Printable,
                    private boost::noncopyable,
                    private util::ObjectCounter<Covariance> {
  public:
   typedef CovarianceParameters Parameters_;
-  static const std::string classname() {return "quench::Covariance";}
+  static const std::string classname() {return "genint::Covariance";}
 
   Covariance(const Geometry &, const oops::Variables &,
              const Parameters_ &, const State &, const State &) {}
@@ -43,4 +43,4 @@ class Covariance : public util::Printable,
 };
 // -----------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

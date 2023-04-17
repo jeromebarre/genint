@@ -32,12 +32,12 @@
 
 #include "src/Geometry.h"
 
-#include "saber/src/saber/interpolation/AtlasInterpWrapper.h"
+#include "saber/interpolation/AtlasInterpWrapper.h"
 
 #define ERR(e) {ABORT(nc_strerror(e));}
 
 // -----------------------------------------------------------------------------
-namespace quench {
+namespace genint {
 // -----------------------------------------------------------------------------
 Fields::Fields(const Geometry & geom, const oops::Variables & vars,
                const util::DateTime & time):
@@ -1264,4 +1264,4 @@ void Fields::deserialize(const std::vector<double> & vect, size_t & index) {
   }
 }
 // -----------------------------------------------------------------------------
-}  // namespace quench
+}  // namespace genint

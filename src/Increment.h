@@ -22,7 +22,7 @@
 #include "src/Fields.h"
 #include "src/State.h"
 
-namespace quench {
+namespace genint {
   class Geometry;
   class State;
 
@@ -39,7 +39,7 @@ class Increment : public util::Printable,
                     public util::Serializable,
                     private util::ObjectCounter<Increment> {
  public:
-  static const std::string classname() {return "quench::Increment";}
+  static const std::string classname() {return "genint::Increment";}
 
 /// Constructor, destructor
   Increment(const Geometry &, const oops::Variables &, const util::DateTime &);
@@ -93,4 +93,4 @@ class Increment : public util::Printable,
 };
 // -----------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

@@ -12,7 +12,7 @@
 
 int main(int argc,  char ** argv) {
   oops::Run run(argc, argv);
-  saber::instantiateCovarFactory<quench::Traits>();
-  oops::Dirac<quench::Traits> dir;
+  saber::instantiateCovarFactory<genint::Traits>();
+  oops::Dirac<genint::Traits> dir;
   return run.execute(dir);
 }

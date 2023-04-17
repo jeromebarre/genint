@@ -14,7 +14,7 @@
 
 #include "src/Fields.h"
 
-namespace quench {
+namespace genint {
 
 // -----------------------------------------------------------------------------
 /// Constructor, destructor
@@ -118,4 +118,4 @@ void State::accumul(const double & zz, const State & xx) {
 }
 // -----------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

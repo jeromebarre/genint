@@ -14,18 +14,18 @@
 
 #include "src/LinearVariableChangeParameters.h"
 
-namespace quench {
+namespace genint {
   class Geometry;
   class State;
   class Increment;
 
 // -----------------------------------------------------------------------------
-/// quench linear change of variable
+/// genint linear change of variable
 
 class LinearVariableChange: public util::Printable {
  public:
   typedef LinearVariableChangeParameters Parameters_;
-  static const std::string classname() {return "quench::LinearVariableChange";}
+  static const std::string classname() {return "genint::LinearVariableChange";}
 
   LinearVariableChange(const Geometry &, const Parameters_ &) {}
 
@@ -42,4 +42,4 @@ class LinearVariableChange: public util::Printable {
 };
 // -----------------------------------------------------------------------------
 
-}  // namespace quench
+}  // namespace genint

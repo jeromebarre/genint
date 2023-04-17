@@ -26,7 +26,7 @@
 #define ERR(e) {ABORT(nc_strerror(e));}
 
 // -----------------------------------------------------------------------------
-namespace quench {
+namespace genint {
 // -----------------------------------------------------------------------------
 Geometry::Geometry(const Parameters_ & params,
                    const eckit::mpi::Comm & comm)
@@ -379,7 +379,7 @@ void Geometry::print(std::ostream & os) const {
   if (os.rdbuf() == oops::Log::info().rdbuf()) {
     prefix = "Info     : ";
   }
-  os << prefix <<  "Quench geometry grid:" << std::endl;
+  os << prefix <<  "genint geometry grid:" << std::endl;
   os << prefix << "- name: " << grid_.name() << std::endl;
   os << prefix << "- size: " << grid_.size() << std::endl;
   if (!unstructuredGrid_) {
@@ -524,4 +524,4 @@ void Geometry::readSeaMask(const std::string & maskPath,
   }
 }
 // -----------------------------------------------------------------------------
-}  // namespace quench
+}  // namespace genint
