@@ -38,6 +38,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
 # ------------------
 list( APPEND genint_testinput
 testinput/convertstate.yaml
+testinput/hofx3d.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
@@ -56,3 +57,8 @@ ecbuild_add_test( TARGET   genint_test_convertstate
                   MPI      6
                   ARGS     testinput/convertstate.yaml
                   COMMAND  genint_convertstate.x )
+
+ecbuild_add_test( TARGET   genint_test_hofx3d
+                  MPI      6
+                  ARGS     testinput/hofx3d.yaml
+                  COMMAND  genint_hofx3d.x )

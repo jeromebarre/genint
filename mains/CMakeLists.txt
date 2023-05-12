@@ -11,36 +11,12 @@ else()
 endif()
 
 # Executables
-#ecbuild_add_executable( TARGET  saber_genint_randomization.x
-#                        SOURCES genintRandomization.cc
-#                        LIBS    genint
-#                                ${vader_LIBRARIES}
-#                                ${gsibec_LIBRARIES}
-#                                saber )
-
-#ecbuild_add_executable( TARGET  saber_genint_error_covariance_training.x
-#                        SOURCES genintErrorCovarianceTraining.cc
-#                        LIBS    genint
-#                                ${vader_LIBRARIES}
-#                                ${gsibec_LIBRARIES}
-#                                saber )
-
-#ecbuild_add_executable( TARGET  saber_genint_dirac.x
-#                        SOURCES genintDirac.cc
-#                        LIBS    genint
-#                                ${vader_LIBRARIES}
-#                                ${gsibec_LIBRARIES}
-#                                saber )
 
 ecbuild_add_executable( TARGET  genint_convertstate.x
                         SOURCES genintConvertState.cc
-                        LIBS    genint
-                                ${vader_LIBRARIES}
-                                saber )
+                        LIBS    genint )
 
 ecbuild_add_executable( TARGET  genint_hofx3d.x
                         SOURCES genintHofX3D.cc
                         LIBS    genint
-                                ${vader_LIBRARIES}
-                                saber
                                 ufo )

@@ -14,7 +14,7 @@
 
 #include "src/Geometry.h"
 #include "src/State.h"
-#include "src/VariableChangeParameters.h"
+#include "src/VariableChangeBase.h"
 
 namespace genint {
   class State;
@@ -35,6 +35,9 @@ class VariableChange : public util::Printable {
 
  private:
   void print(std::ostream & os) const override {os << "VariableChange";};
+  std::unique_ptr<VariableChangeBase> variableChange_;
+  std::unique_ptr<vader::Vader> vader_;
+
 };
 // -----------------------------------------------------------------------------
 
