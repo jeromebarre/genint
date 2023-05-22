@@ -236,6 +236,10 @@ Geometry::Geometry(const Parameters_ & params,
     // Fill extra geometry fields
     group.extraFields_ = atlas::FieldSet();
 
+    // Vertical coordinate
+    atlas::Field vunit = functionSpace_.createField<double>(
+      atlas::option::name("vunit") | atlas::option::levels(group.levels_));
+
     // Vertical unit
     atlas::Field vunit = functionSpace_.createField<double>(
       atlas::option::name("vunit") | atlas::option::levels(group.levels_));
@@ -347,12 +351,8 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_), halo_(other.hal
     // Copy corresponding level for 2D variables (first or last)
     group.lev2d_ = other.groups_[groupIndex].lev2d_;
 
-    // Copy vertical unit
-    group.vunit_ = other.groups_[groupIndex].vunit_;
-
     // Copy extra fields
     group.extraFields_ = atlas::FieldSet();
-    group.extraFields_->add(other.groups_[groupIndex].extraFields_["vunit"]);
     group.extraFields_->add(other.groups_[groupIndex].extraFields_["gmask"]);
     if (other.groups_[groupIndex].extraFields_.has("hmask")) {
       group.extraFields_->add(other.groups_[groupIndex].extraFields_["hmask"]);
@@ -373,32 +373,7 @@ std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const 
   }
   return sizes;
 }
-// -----------------------------------------------------------------------------
-void Geometry::print(std::ostream & os) const {
-  std::string prefix;
-  if (os.rdbuf() == oops::Log::info().rdbuf()) {
-    prefix = "Info     : ";
-  }
-  os << prefix <<  "genint geometry grid:" << std::endl;
-  os << prefix << "- name: " << grid_.name() << std::endl;
-  os << prefix << "- size: " << grid_.size() << std::endl;
-  if (!unstructuredGrid_) {
-    os << prefix << "Partitioner:" << std::endl;
-    os << prefix << "- type: " << partitioner_.type() << std::endl;
-  }
-  os << prefix << "Function space:" << std::endl;
-  os << prefix << "- type: " << functionSpace_.type() << std::endl;
-  os << prefix << "- halo: " << halo_ << std::endl;
-  os << prefix << "Groups: " << std::endl;
-  for (size_t groupIndex = 0; groupIndex < groups_.size(); ++groupIndex) {
-    os << prefix << "- Group " << groupIndex << ":" << std::endl;
-    os << prefix << "  Vertical levels: " << std::endl;
-    os << prefix << "  - number: " << levels(groupIndex) << std::endl;
-    os << prefix << "  - vunit: " << groups_[groupIndex].vunit_ << std::endl;
-    os << prefix << "  Mask size: " << static_cast<int>(groups_[groupIndex].gmaskSize_*100.0)
-       << "%" << std::endl;
-  }
-}
+
 // -----------------------------------------------------------------------------
 void Geometry::readSeaMask(const std::string & maskPath,
                            const size_t & levels,

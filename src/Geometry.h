@@ -47,8 +47,9 @@ class GroupParameters : public oops::Parameters {
   /// Corresponding level for 2D variables (first or last)
   oops::Parameter<std::string> lev2d{"lev2d", "first", this};
 
-  /// Vertical unit
-  oops::OptionalParameter<std::vector<double>> vunit{"vunit", this};
+  /// Sigma pressure coefs
+  oops::OptionalParameter<std::vector<double>> {"ak", this};
+  oops::OptionalParameter<std::vector<double>> {"bk", this};
 
   /// Mask type
   oops::Parameter<std::string> maskType{"mask type", "none", this};
@@ -136,7 +137,9 @@ class Geometry : public util::Printable,
   struct groupData {
     size_t levels_;
     std::string lev2d_;
-    std::vector<double> vunit_;
+    std::string verticalCoordinate_;
+    std::vector<double> ak_;
+    std::vector<double> bk_;
     atlas::FieldSet extraFields_;
     double gmaskSize_;
   };
