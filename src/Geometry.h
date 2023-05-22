@@ -47,9 +47,15 @@ class GroupParameters : public oops::Parameters {
   /// Corresponding level for 2D variables (first or last)
   oops::Parameter<std::string> lev2d{"lev2d", "first", this};
 
+  // Vertical coordinate type
+  oops::RequiredParameter<std::string> verticalCoordinate{"vertical coordinate", this};
+
   /// Sigma pressure coefs
-  oops::OptionalParameter<std::vector<double>> {"ak", this};
-  oops::OptionalParameter<std::vector<double>> {"bk", this};
+  oops::OptionalParameter<std::vector<double>> ak{"ak", this};
+  oops::OptionalParameter<std::vector<double>> bk{"bk", this};
+
+  // Top pressure
+  oops::OptionalParameter<double> pTop{"top pressure", this};
 
   /// Mask type
   oops::Parameter<std::string> maskType{"mask type", "none", this};
@@ -140,6 +146,7 @@ class Geometry : public util::Printable,
     std::string verticalCoordinate_;
     std::vector<double> ak_;
     std::vector<double> bk_;
+    double pTop_;
     atlas::FieldSet extraFields_;
     double gmaskSize_;
   };
