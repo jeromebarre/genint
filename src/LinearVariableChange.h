@@ -10,14 +10,16 @@
 #include <ostream>
 #include <string>
 
+#include "atlas/field.h"
+
 #include "oops/util/Printable.h"
 
+#include "src/Geometry.h"
+#include "src/Increment.h"
 #include "src/LinearVariableChangeParameters.h"
+#include "src/State.h"
 
 namespace genint {
-  class Geometry;
-  class State;
-  class Increment;
 
 // -----------------------------------------------------------------------------
 /// genint linear change of variable
@@ -27,18 +29,20 @@ class LinearVariableChange: public util::Printable {
   typedef LinearVariableChangeParameters Parameters_;
   static const std::string classname() {return "genint::LinearVariableChange";}
 
-  LinearVariableChange(const Geometry &, const Parameters_ &) {}
+  LinearVariableChange(const Geometry &, const Parameters_ &);
+  ~LinearVariableChange();
 
 /// Perform linear transforms
-  void changeVarTL(Increment &, const oops::Variables &) const {}
-  void changeVarInverseTL(Increment &, const oops::Variables &) const {}
-  void changeVarAD(Increment &, const oops::Variables &) const {}
-  void changeVarInverseAD(Increment &, const oops::Variables &) const {}
+  void changeVarTL(Increment &, const oops::Variables &) const;
+  void changeVarInverseTL(Increment &, const oops::Variables &) const;
+  void changeVarAD(Increment &, const oops::Variables &) const;
+  void changeVarInverseAD(Increment &, const oops::Variables &) const;
 
   void changeVarTraj(const State &, const oops::Variables &) {}
 
  private:
   void print(std::ostream & os) const override {os << "LinearVariableChange";};
+  atlas::FieldSet fset_;
 };
 // -----------------------------------------------------------------------------
 
