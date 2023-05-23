@@ -355,9 +355,6 @@ std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const 
   }
   return sizes;
 }
-<<<<<<< HEAD
-
-=======
 // -----------------------------------------------------------------------------
 void Geometry::latlon(std::vector<double> & lats, std::vector<double> & lons,
                       const bool includeHaloForRealLife) const {
@@ -430,7 +427,6 @@ void Geometry::print(std::ostream & os) const {
        << "%" << std::endl;
   }
 }
->>>>>>> master
 // -----------------------------------------------------------------------------
 void Geometry::readSeaMask(const std::string & maskPath,
                            const size_t & levels,
