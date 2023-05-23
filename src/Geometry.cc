@@ -30,7 +30,7 @@ namespace genint {
 // -----------------------------------------------------------------------------
 Geometry::Geometry(const Parameters_ & params,
                    const eckit::mpi::Comm & comm)
-  : comm_(comm), groups_(), iodaBased_(false) {
+  : comm_(comm), gridType_("no_type"), groups_() {
   // Initialize eckit communicator for ATLAS
   eckit::mpi::setCommDefault(comm_.name().c_str());
 
@@ -42,101 +42,40 @@ Geometry::Geometry(const Parameters_ & params,
     halo_ = 0;
   }
 
-  // Setup grid
-  const boost::optional<eckit::LocalConfiguration> &gridParams = params.grid.value();
-  const boost::optional<std::string> &iodaFile = params.iodaFile.value();
+  // Set flag
   unstructuredGrid_ = false;
-  if (gridParams != boost::none) {
-    oops::Log::info() << "Info     : Grid config: " << *gridParams << std::endl;
-    eckit::LocalConfiguration gridParams_(*gridParams);
-    if (gridParams_.has("type")) {
-      std::string type = gridParams_.getString("type");
-      if (type == "unstructured") {
-        // Split unstructured grid among processors
-        std::vector<double> xyFull = gridParams_.getDoubleVector("xy");
-        size_t gridSize = xyFull.size()/2;
-        size_t rank = 0;
-        std::vector<double> xy;
-        for (size_t jnode = 0; jnode < gridSize; ++jnode) {
-          // Copy coordinates on a given task
-          if (comm_.rank() == rank) {
-            xy.push_back(xyFull[2*jnode]);
-            xy.push_back(xyFull[2*jnode+1]);
-          }
 
-          // Update task index
-          ++rank;
-          if (rank == comm_.size()) rank = 0;
+  // Setup grid
+  eckit::LocalConfiguration gridParams = params.grid.value();
+  oops::Log::info() << "Info     : Grid config: " << gridParams << std::endl;
+  if (gridParams.has("type")) {
+    gridType_ = gridParams.getString("type");
+    if (gridType_ == "unstructured") {
+      // Split unstructured grid among processors
+      std::vector<double> xyFull = gridParams.getDoubleVector("xy");
+      size_t gridSize = xyFull.size()/2;
+      size_t rank = 0;
+      std::vector<double> xy;
+      for (size_t jnode = 0; jnode < gridSize; ++jnode) {
+        // Copy coordinates on a given task
+        if (comm_.rank() == rank) {
+          xy.push_back(xyFull[2*jnode]);
+          xy.push_back(xyFull[2*jnode+1]);
         }
 
-        // Reset coordinates
-        gridParams_.set("xy", xy);
-
-        // Set flag
-        unstructuredGrid_ = true;
-      }
-    }
-    grid_ = atlas::Grid(gridParams_);
-  } else if (iodaFile != boost::none) {
-    oops::Log::info() << "Info     : Grid input file: " << *iodaFile << std::endl;
-
-    // IODA-based geometry
-    iodaBased_ = true;
-
-    // Grid size
-    size_t nlocs = 0;
-
-    // NetCDF IDs
-    int ncid, retval, nlocs_id, grp_id, lon_id, lat_id;
-
-    if (comm_.rank() == 0) {
-      // Open NetCDF file
-      if ((retval = nc_open(iodaFile->c_str(), NC_NOWRITE, &ncid))) ERR(retval);
-
-      // Get nlocs
-      if ((retval = nc_inq_dimid(ncid, "nlocs", &nlocs_id))) ERR(retval);
-      if ((retval = nc_inq_dimlen(ncid, nlocs_id, &nlocs))) ERR(retval);
-    }
-
-    // Broadcast size
-    comm_.broadcast(nlocs, 0);
-
-    // Coordinates
-    std::vector<double> xy(2*nlocs);
-
-    if (comm_.rank() == 0) {
-      // Get lon/lat
-      if ((retval = nc_inq_ncid(ncid, "MetaData", &grp_id))) ERR(retval);
-      if ((retval = nc_inq_varid(grp_id, "longitude", &lon_id))) ERR(retval);
-      if ((retval = nc_inq_varid(grp_id, "latitude", &lat_id))) ERR(retval);
-
-      // Read data
-      double zlon[nlocs][1];
-      double zlat[nlocs][1];
-      if ((retval = nc_get_var_double(grp_id, lon_id, &zlon[0][0]))) ERR(retval);
-      if ((retval = nc_get_var_double(grp_id, lat_id, &zlat[0][0]))) ERR(retval);
-
-      // Copy data
-      for (size_t i = 0; i < nlocs; ++i) {
-        xy[2*i] = zlon[i][0];
-        xy[2*i+1] = zlat[i][0];
+        // Update task index
+        ++rank;
+        if (rank == comm_.size()) rank = 0;
       }
 
-      // Close file
-      if ((retval = nc_close(ncid))) ERR(retval);
+      // Reset coordinates
+      gridParams.set("xy", xy);
+
+      // Set flag
+      unstructuredGrid_ = true;
     }
-
-    // Broadcast coordinates
-    comm_.broadcast(xy.begin(), xy.end(), 0);
-
-    // Define grid configuration
-    eckit::LocalConfiguration gridConfig;
-    gridConfig.set("type", "unstructured");
-    gridConfig.set("xy", xy);
-    grid_ = atlas::Grid(gridConfig);
-  } else {
-    ABORT("Grid or grid input file required");
   }
+  grid_ = atlas::Grid(gridParams);
 
   if (!unstructuredGrid_) {
     // Setup partitioner
@@ -251,37 +190,66 @@ Geometry::Geometry(const Parameters_ & params,
     group.extraFields_->add(gmask);
 
     // Halo mask
-    if (grid_.name().compare(0, 1, std::string{"L"}) == 0) {
-      // Regular lonlat grid
+    if (functionSpace_.type() == "StructuredColumns") {
+      // Structured columns
       atlas::functionspace::StructuredColumns fs(functionSpace_);
       atlas::StructuredGrid grid = fs.grid();
       atlas::Field hmask = fs.createField<int>(atlas::option::name("hmask")
         | atlas::option::levels(1));
       auto hmaskView = atlas::array::make_view<int, 2>(hmask);
+      auto ghostView = atlas::array::make_view<int, 1>(fs.ghost());
       auto view_i = atlas::array::make_view<int, 1>(fs.index_i());
       auto view_j = atlas::array::make_view<int, 1>(fs.index_j());
       for (atlas::idx_t j = fs.j_begin_halo(); j < fs.j_end_halo(); ++j) {
         for (atlas::idx_t i = fs.i_begin_halo(j); i < fs.i_end_halo(j); ++i) {
           atlas::idx_t jnode = fs.index(i, j);
-          if (((view_j(jnode) == 1) || (view_j(jnode) == grid.ny())) && (view_i(jnode) != 1)) {
-            hmaskView(jnode, 0) = 0;
-          } else {
-            hmaskView(jnode, 0) = 1;
+          hmaskView(jnode, 0) = ghostView(jnode) > 0 ? 0 : 1;
+        }
+      }
+
+      // Special case for lon/lat grids
+      if (grid_.name().compare(0, 1, std::string{"L"}) == 0) {
+        for (atlas::idx_t j = fs.j_begin_halo(); j < fs.j_end_halo(); ++j) {
+          for (atlas::idx_t i = fs.i_begin_halo(j); i < fs.i_end_halo(j); ++i) {
+            atlas::idx_t jnode = fs.index(i, j);
+            if (((view_j(jnode) == 1) || (view_j(jnode) == grid.ny())) && (view_i(jnode) != 1)) {
+              hmaskView(jnode, 0) = 0;
+            }
           }
         }
       }
+
+      // Add halo mask
       group.extraFields_->add(hmask);
-    } else if (grid_.name().compare(0, 2, std::string{"CS"}) == 0) {
-      // Cubed-sphere grid
-      atlas::functionspace::NodeColumns fs(functionSpace_);
-      atlas::Field hmask = fs.createField<int>(atlas::option::name("hmask")
-        | atlas::option::levels(1));
-      auto hmaskView = atlas::array::make_view<int, 2>(hmask);
-      auto ghostView = atlas::array::make_view<int, 1>(fs.ghost());
-      for (atlas::idx_t jnode = 0; jnode < hmask.shape(0); ++jnode) {
-        hmaskView(jnode, 0) = ghostView(jnode) > 0 ? 0 : 1;
+    } else if (functionSpace_.type() == "NodeColumns") {
+      // NodeColumns
+      if (grid_.name().compare(0, 2, std::string{"CS"}) == 0) {
+        // CubedSphere
+        atlas::functionspace::NodeColumns fs(functionSpace_);
+        atlas::Field hmask = fs.createField<int>(atlas::option::name("hmask")
+          | atlas::option::levels(1));
+        auto hmaskView = atlas::array::make_view<int, 2>(hmask);
+        auto ghostView = atlas::array::make_view<int, 1>(fs.ghost());
+        for (atlas::idx_t jnode = 0; jnode < hmask.shape(0); ++jnode) {
+          hmaskView(jnode, 0) = ghostView(jnode) > 0 ? 0 : 1;
+        }
+
+        // Add halo mask
+        group.extraFields_->add(hmask);
+      } else {
+        // Other NodeColumns
+        atlas::functionspace::NodeColumns fs(functionSpace_);
+        atlas::Field hmask = fs.createField<int>(atlas::option::name("hmask")
+          | atlas::option::levels(1));
+        auto hmaskView = atlas::array::make_view<int, 2>(hmask);
+        auto ghostView = atlas::array::make_view<int, 1>(fs.ghost());
+        for (atlas::idx_t jnode = 0; jnode < hmask.shape(0); ++jnode) {
+          hmaskView(jnode, 0) = ghostView(jnode) > 0 ? 0 : 1;
+        }
+
+        // Add halo mask
+        group.extraFields_->add(hmask);
       }
-      group.extraFields_->add(hmask);
     }
 
     // Mask size
@@ -315,8 +283,8 @@ Geometry::Geometry(const Parameters_ & params,
 }
 // -----------------------------------------------------------------------------
 Geometry::Geometry(const Geometry & other) : comm_(other.comm_), halo_(other.halo_),
-  grid_(other.grid_), unstructuredGrid_(other.unstructuredGrid_), partitioner_(other.partitioner_),
-  mesh_(other.mesh_), groupIndex_(other.groupIndex_), iodaBased_(other.iodaBased_)  {
+  grid_(other.grid_), gridType_(other.gridType_), unstructuredGrid_(other.unstructuredGrid_),
+  partitioner_(other.partitioner_), mesh_(other.mesh_), groupIndex_(other.groupIndex_)  {
   // Copy function space
   if (other.functionSpace_.type() == "StructuredColumns") {
     // StructuredColumns
@@ -366,6 +334,20 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_), halo_(other.hal
   }
 }
 // -----------------------------------------------------------------------------
+size_t Geometry::levels(const std::string & var) const {
+  if (groupIndex_.count(var) == 0) {
+    ABORT("Variable " + var + " not found in groupIndex_");
+  }
+  return groups_[groupIndex_.at(var)].levels_;
+}
+// -----------------------------------------------------------------------------
+size_t Geometry::groupIndex(const std::string & var) const {
+  if (groupIndex_.count(var) == 0) {
+    ABORT("Variable " + var + " not found in groupIndex_");
+  }
+  return groupIndex_.at(var);
+}
+// -----------------------------------------------------------------------------
 std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const {
   std::vector<size_t> sizes;
   for (const auto & var : vars.variables()) {
@@ -374,12 +356,58 @@ std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const 
   return sizes;
 }
 // -----------------------------------------------------------------------------
+void Geometry::latlon(std::vector<double> & lats, std::vector<double> & lons,
+                      const bool includeHaloForRealLife) const {
+  const auto lonlat = atlas::array::make_view<double, 2>(functionSpace_.lonlat());
+  const auto ghost = atlas::array::make_view<int, 1>(functionSpace_.ghost());
+
+  // TODO(Algo): Remove/fix the hack below when GeometryData local KD tree needs
+  // to be set up correctly (e.g. when UnstructuredInterpolator is used).
+  // For now never include halo in the latlon output because halo points from
+  // some atlas grids (e.g. gaussian) can have unrealistic latitudes (e.g. more
+  // than 90 degrees) and those latitudes can't be handled by KD trees.
+  // Global KD trees created in GeometryData are used for communication and
+  // don't need halo information.
+  // Local KD trees in GeometryData need halo information but aren't used unless
+  // UnstructuredInterpolator is used.
+  bool includeHalo = false;
+  const size_t npts = functionSpace_.size();
+  const size_t nptsReturned = [&]() {
+    if (includeHalo && comm_.size() > 1) {
+      return npts;
+    } else {
+      size_t result = 0;
+      for (atlas::idx_t i = 0; i < ghost.shape(0); ++i) {
+        if (ghost(i) == 0) {
+          result++;
+        }
+      }
+      return result;
+    }
+  }();
+
+  lats.resize(nptsReturned);
+  lons.resize(nptsReturned);
+
+  size_t count = 0;
+  for (size_t jj = 0; jj < npts; ++jj) {
+    // copy owned points, i.e. points with ghost==?
+    if (ghost(jj) == 0 || (includeHalo && comm_.size() > 1)) {
+      lats[count] = lonlat(jj, 1);
+      lons[count] = lonlat(jj, 0);
+      if (lons[count] < 0.0) lons[count] += 360.0;
+      count++;
+    }
+  }
+  ASSERT(count == nptsReturned);
+}
+// -----------------------------------------------------------------------------
 void Geometry::print(std::ostream & os) const {
   std::string prefix;
   if (os.rdbuf() == oops::Log::info().rdbuf()) {
     prefix = "Info     : ";
   }
-  os << prefix <<  "genint geometry grid:" << std::endl;
+  os << prefix <<  "Quench geometry grid:" << std::endl;
   os << prefix << "- name: " << grid_.name() << std::endl;
   os << prefix << "- size: " << grid_.size() << std::endl;
   if (!unstructuredGrid_) {
