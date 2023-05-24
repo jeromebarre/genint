@@ -17,6 +17,7 @@ LinearVariableChange.cc
 State.cc
 State.h
 VariableChange.h
+VariableChangeBase.h
 
 )
 

@@ -48,20 +48,24 @@ class GroupParameters : public oops::Parameters {
   oops::Parameter<std::string> lev2d{"lev2d", "first", this};
 
   // Vertical coordinate type
-  oops::RequiredParameter<std::string> verticalCoordinate{"vertical coordinate", this};
+  oops::Parameter<std::string> verticalCoordinate{"vertical coordinate", "deltap", this};
+
+  // Top pressure
+  oops::Parameter<double> pTop{"top pressure", 0.0, this};
+
+  /// Vertical unit
+  oops::OptionalParameter<std::vector<double>> vunit{"vunit", this};
 
   /// Sigma pressure coefs
   oops::OptionalParameter<std::vector<double>> ak{"ak", this};
   oops::OptionalParameter<std::vector<double>> bk{"bk", this};
-
-  // Top pressure
-  oops::OptionalParameter<double> pTop{"top pressure", this};
 
   /// Mask type
   oops::Parameter<std::string> maskType{"mask type", "none", this};
 
   /// Mask path
   oops::Parameter<std::string> maskPath{"mask path", "../genint/data/landsea.nc", this};
+
 };
 
 // -----------------------------------------------------------------------------
@@ -123,7 +127,6 @@ class Geometry : public util::Printable,
   std::vector<size_t> variableSizes(const oops::Variables & vars) const;
   void latlon(std::vector<double> &, std::vector<double> &, const bool) const;
   bool levelsAreTopDown() const {return true;}
-  bool iodaBased() const {return iodaBased_;}
 
  private:
   void print(std::ostream &) const;
@@ -142,6 +145,7 @@ class Geometry : public util::Printable,
     size_t levels_;
     std::string lev2d_;
     std::string verticalCoordinate_;
+    std::vector<double> vunit_;
     std::vector<double> ak_;
     std::vector<double> bk_;
     double pTop_;
@@ -149,7 +153,6 @@ class Geometry : public util::Printable,
     double gmaskSize_;
   };
   std::vector<groupData> groups_;
-  bool iodaBased_;
 };
 // -----------------------------------------------------------------------------
 

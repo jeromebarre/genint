@@ -38,9 +38,9 @@ ecbuild_add_executable( TARGET  genint_convertstate.x
                                 ${vader_LIBRARIES}
                                 saber )
 
-ecbuild_add_executable( TARGET  genint_hofx3d.x
-                        SOURCES genintHofX3D.cc
-                        LIBS    genint
-                                ${vader_LIBRARIES}
-                                saber
-                                ufo )
+#ecbuild_add_executable( TARGET  genint_hofx3d.x
+#                        SOURCES genintHofX3D.cc
+#                        LIBS    genint
+#                                ${vader_LIBRARIES}
+#                                saber
+#                                ufo )

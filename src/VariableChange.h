@@ -7,16 +7,27 @@
 
 #pragma once
 
+#include <memory>
 #include <ostream>
 #include <string>
 
+#include <boost/ptr_container/ptr_vector.hpp>
+
+#include "oops/base/VariableChangeParametersBase.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/Printable.h"
+
+#include "vader/vader.h"
 
 #include "src/Geometry.h"
 #include "src/State.h"
-#include "src/VariableChangeParameters.h"
+#include "src/VariableChangeBase.h"
 
 namespace genint {
+  class Geometry;
   class State;
 
 // -----------------------------------------------------------------------------
@@ -24,17 +35,21 @@ namespace genint {
 
 class VariableChange : public util::Printable {
  public:
-  typedef VariableChangeParameters Parameters_;
   static const std::string classname() {return "genint::VariableChange";}
 
-  VariableChange(const Parameters_ &, const Geometry &) {}
+  typedef VariableChangeParametersWrapper Parameters_;
+
+  explicit VariableChange(const Parameters_ &, const Geometry &);
+  ~VariableChange();
 
 /// Perform transforms
-  void changeVar(State &, const oops::Variables &) const {}
-  void changeVarInverse(State &, const oops::Variables &) const {}
+  void changeVar(State &, const oops::Variables &) const;
+  void changeVarInverse(State &, const oops::Variables &) const;
 
  private:
-  void print(std::ostream & os) const override {os << "VariableChange";};
+  void print(std::ostream &) const override;
+  std::unique_ptr<VariableChangeBase> variableChange_;
+  std::unique_ptr<vader::Vader> vader_;
 };
 // -----------------------------------------------------------------------------
 
