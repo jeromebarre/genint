@@ -1,0 +1,14 @@
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    N: 90
+  groups:
+  - io variables:
+    - SpeciesConc_NO2
+    - SpeciesConc_CO
+    jedi variables:
+    - volume_mixing_ratio_of_no2
+    - volume_mixing_ratio_of_co
+    levels: 72
+  halo: 1
