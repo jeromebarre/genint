@@ -4,7 +4,8 @@
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
 list( APPEND genint_src_files
-
+Constants.h
+Constants.cc
 Covariance.h
 Fields.cc
 Fields.h
@@ -17,8 +18,9 @@ LinearVariableChange.cc
 State.cc
 State.h
 VariableChange.h
+VariableChange.cc
 VariableChangeBase.h
-
+VariableChangeBase.cc
 )
 
 ecbuild_add_library( TARGET   genint
