@@ -138,6 +138,9 @@ Geometry::Geometry(const Parameters_ & params,
     // Number of levels
     group.levels_ = groupParams.levels.value();
 
+    // JEDI varnames
+    group.jediVariables_ = groupParams.jediVariables.value();
+
     // Corresponding level for 2D variables (first or last)
     group.lev2d_ = groupParams.lev2d.value();
 

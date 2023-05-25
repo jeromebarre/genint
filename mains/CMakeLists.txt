@@ -32,6 +32,10 @@ endif()
 #                                ${gsibec_LIBRARIES}
 #                                saber )
 
+ecbuild_add_executable( TARGET  genint_geometry.x
+                        SOURCES genintGeometry.cc
+                        LIBS    genint )
+
 ecbuild_add_executable( TARGET  genint_convertstate.x
                         SOURCES genintConvertState.cc
                         LIBS    genint

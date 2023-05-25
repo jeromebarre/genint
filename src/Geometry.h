@@ -38,8 +38,11 @@ class GroupParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(GroupParameters, Parameters)
 
  public:
-  /// Variables
-  oops::RequiredParameter<std::vector<std::string>> variables{"variables", this};
+  /// IO Variables
+  oops::RequiredParameter<std::vector<std::string>> variables{"io variables", this};
+
+  /// JEDI variables
+  oops::RequiredParameter<std::vector<std::string>> jediVariables{"jedi variables", this};
 
   /// Number of levels
   oops::Parameter<size_t> levels{"levels", 1, this};
@@ -149,6 +152,7 @@ class Geometry : public util::Printable,
     std::vector<double> ak_;
     std::vector<double> bk_;
     double pTop_;
+    std::vector<std::string> jediVariables_;
     atlas::FieldSet extraFields_;
     double gmaskSize_;
   };

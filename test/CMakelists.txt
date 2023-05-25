@@ -37,6 +37,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
 # Test input scripts
 # ------------------
 list( APPEND genint_testinput
+testinput/geometry.yaml
 testinput/convertstate.yaml
 )
 
@@ -52,6 +53,11 @@ link_files(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${genint_test
 
 # Interface tests
 # ---------------
+ecbuild_add_test( TARGET   genint_test_geometry
+                  MPI      6
+                  ARGS     testinput/geometry.yaml
+                  COMMAND  genint_geometry.x )
+
 ecbuild_add_test( TARGET   genint_test_convertstate
                   MPI      6
                   ARGS     testinput/convertstate.yaml
