@@ -139,8 +139,12 @@ Geometry::Geometry(const Parameters_ & params,
     group.levels_ = groupParams.levels.value();
 
     // JEDI varnames
-    group.jediVariables_ = groupParams.jediVariables.value();
-
+    group.mapVariables_ = groupParams.mapVariables.value();
+    oops::Log::info() << "Info     : Variable name mapping: " << std::endl;
+    oops::Log::info() << "Info     : io var -> jedi var"  << std::endl;
+    for (const auto & var : groupParams.variables.value()) {
+       oops::Log::info() << var << " -> " << group.mapVariables_[var] << std::endl;
+    }
     // Corresponding level for 2D variables (first or last)
     group.lev2d_ = groupParams.lev2d.value();
 

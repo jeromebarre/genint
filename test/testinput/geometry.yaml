@@ -7,8 +7,10 @@ geometry:
   - io variables:
     - SpeciesConc_NO2
     - SpeciesConc_CO
-    jedi variables:
-    - volume_mixing_ratio_of_no2
-    - volume_mixing_ratio_of_co
+    - delp
+    map jedi names:
+      SpeciesConc_NO2: volume_mixing_ratio_of_no2
+      SpeciesConc_CO: volume_mixing_ratio_of_co
+      delp: air_pressure_thickness
     levels: 72
   halo: 1
