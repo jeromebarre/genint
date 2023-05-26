@@ -49,6 +49,7 @@ class VariableChange : public util::Printable {
  private:
   void print(std::ostream &) const override;
   std::unique_ptr<VariableChangeBase> variableChange_;
+  std::map<std::string,std::string> mapVariables_;
   std::unique_ptr<vader::Vader> vader_;
 };
 // -----------------------------------------------------------------------------

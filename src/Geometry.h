@@ -131,6 +131,15 @@ class Geometry : public util::Printable,
   void latlon(std::vector<double> &, std::vector<double> &, const bool) const;
   bool levelsAreTopDown() const {return true;}
 
+  // Functions to retrieve geometry features
+  const std::vector<double> & ak() const {return groups_[0].ak_;}
+  const std::vector<double> & bk() const {return groups_[0].bk_;}
+  const double & pTop() const {return groups_[0].pTop_;}
+  const double & levels() const {return groups_[0].levels_;}
+
+  // Mapping io var to jedi names
+  const std::map<std::string,std::string> & mapVariables() const {return groups_[0].mapVariables_;}
+
  private:
   void print(std::ostream &) const;
   void readSeaMask(const std::string &, const size_t &, const std::string &, atlas::Field &) const;
