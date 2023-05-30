@@ -21,9 +21,9 @@ namespace genint {
     std::vector<std::string> getAllConstantsNames();
 
     // Function for accessing the constants from Fortran
-    extern "C" {
-        void getConstantF(const char constNameC[], double & constValueC);
-    }
-}  // namespace fv3jedi
+    //extern "C" {
+    //    void getConstantF(const char constNameC[], double & constValueC);
+    //}
+}  // namespace genint
 
 // -------------------------------------------------------------------------------------------------

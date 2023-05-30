@@ -18,7 +18,7 @@ namespace genint {
 
 VariableChangeFactory::VariableChangeFactory(const std::string & name) {
   if (getMakers().find(name) != getMakers().end()) {
-    oops::Log::error() << name << " already registered in fv3jedi::VariableChangeFactory."
+    oops::Log::error() << name << " already registered in genint::VariableChangeFactory."
                        << std::endl;
     ABORT("Element already registered in genint::VariableChangeFactory.");
   }
@@ -51,6 +51,8 @@ std::unique_ptr<VariableChangeParametersBase>
 VariableChangeFactory::createParameters(const std::string &name) {
   typename std::map<std::string, VariableChangeFactory*>::iterator it =
       getMakers().find(name);
+  oops::Log::trace() << name << std::endl;
+  oops::Log::trace() << getMakers() << std::endl;
   if (it == getMakers().end()) {
     throw std::runtime_error(name + " does not exist in genint::VariableChangeFactory");
   }

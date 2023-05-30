@@ -48,7 +48,7 @@ VariableChange::VariableChange(const Parameters_ & params, const Geometry & geom
                                   ("sigma_pressure_hybrid_coordinate_b_coefficient", geometry.bk());
   vaderConstructConfig.addToConfig<int>("nLevels", geometry.levels());
 
-  // Create vader with fv3-jedi custom cookbook
+  // Create vader with genint custom cookbook
   vader_.reset(new vader::Vader(params.variableChangeParameters.value().vader,
                                 vaderConstructConfig));
   // Create the variable change
