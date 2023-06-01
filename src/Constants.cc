@@ -16,7 +16,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-namespace fv3jedi {
+namespace genint {
     // Define the constants where they are used to compute other constants
     static const double grav           = 9.80665;
     static const double airmw          = 28.965;

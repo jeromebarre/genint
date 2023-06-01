@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include <typeinfo>
+
 #include "oops/mpi/mpi.h"
 #include "oops/util/Logger.h"
 
@@ -23,21 +25,21 @@ namespace genint {
 // -------------------------------------------------------------------------------------------------
 
 VariableChange::VariableChange(const Parameters_ & params, const Geometry & geometry)
-  : mapVariables_(geometry.mapVariables()), vader_() {
+  : mapVariables_(geometry.mapVariables()), inputParam_(), vader_() {
 
   // Create vader cookbook
   vader::cookbookConfigType vaderCustomCookbook =
-                                        params.variableChangeParameters.value().vaderCustomCookbook;
+                                        params.vaderCustomCookbook;
 
 
   // Create the VaderConstructConfig object
   vader::VaderConstructConfig vaderConstructConfig(vaderCustomCookbook);
 
   // Add all constants to vader constructor config
-  //std::vector<std::string> allConstantsNames = getAllConstantsNames();
-  //for (std::string allConstantsName : allConstantsNames) {
-  //  vaderConstructConfig.addToConfig<double>(allConstantsName, getConstant(allConstantsName));
-  //}
+  std::vector<std::string> allConstantsNames = getAllConstantsNames();
+  for (std::string allConstantsName : allConstantsNames) {
+    vaderConstructConfig.addToConfig<double>(allConstantsName, getConstant(allConstantsName));
+  }
 
   // Add geometry data to vader constructor config
   vaderConstructConfig.addToConfig<double>("air_pressure_at_top_of_atmosphere_model",
@@ -48,12 +50,17 @@ VariableChange::VariableChange(const Parameters_ & params, const Geometry & geom
                                   ("sigma_pressure_hybrid_coordinate_b_coefficient", geometry.bk());
   vaderConstructConfig.addToConfig<int>("nLevels", geometry.levels());
 
+
+  inputParam_ = params.inputParam;
+  oops::Log::trace() << "inputParam_" << std::endl;
+  oops::Log::trace() << inputParam_ << std::endl;
+
   // Create vader with genint custom cookbook
-  vader_.reset(new vader::Vader(params.variableChangeParameters.value().vader,
+  vader_.reset(new vader::Vader(params.vaderParam,
                                 vaderConstructConfig));
   // Create the variable change
-  variableChange_.reset(VariableChangeFactory::create(geometry,
-                                                      params.variableChangeParameters.value()));
+  //variableChange_.reset(VariableChangeFactory::create(geometry,
+  //                                                    params.variableChangeParameters.value()));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -66,53 +73,38 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   // Trace
   oops::Log::trace() << "VariableChange::changeVar starting" << std::endl;
 
-  // Use map to get long names
-  // ---------------------------
-  const std::vector<std::string>& varsVec = vars_out.variables();
-  std::map<std::string,std::string> mapVars = mapVariables_;
-  std::vector<std::string> longNameVec;
-  for (auto &var : varsVec) {
-    longNameVec.push_back(mapVars[var]);
-  }
-  const oops::Variables vars = oops::Variables(longNameVec);
+  // get the input variable change from config
+  const std::vector<std::string>& vars_in = inputParam_;
+  oops::Variables varsVader = vars_out;
 
-  // Return if required vars in input
-  // --------------------------------
-  //if (vars <= x.variables()) {
-  //  x.updateFields(vars);
-  //  oops::Log::info() << "VariableChange::changeVar done (identity)" << std::endl;
-  //  return;
-  //}
-
-  // Call Vader to perform first set of variable transforms
-  // ------------------------------------------------------
-
-  // Record start variables
-  oops::Variables varsFilled = x.variables();
-
-  oops::Variables varsVader = vars;
-  //varsVader -= varsFilled;  // Pass only the needed variables
-
-  // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
-  // it holds the vars NOT fulfilled by Vader, i.e., the vars still to be requested elsewhere.
-  // vader_->changeVar also returns the variables fulfilled by Vader. These variables are allocated
-  // and populated and added to the FieldSet (xfs).
+  // replace var names by the long names from the map in config
+  // and create the fieldset with the required vars only
   atlas::FieldSet xfs;
+  atlas::FieldSet xfsIn;
   x.toFieldSet(xfs);
-  varsFilled += vader_->changeVar(xfs, varsVader);
-  //x.updateFields(varsFilled);
-  x.fromFieldSet(xfs);
+  const std::vector<std::string>& varsVec = xfs.field_names();
+  std::map<std::string,std::string> mapVars = mapVariables_;
+  size_t index = 0;
+  for (auto &var : varsVec) {
+    xfs.field(var).rename(mapVars[var]);
+    if (mapVars[var] == vars_in[index]) {
+      xfsIn.add(xfs.field(var));
+      ++index;
+    }
+  }
 
-  // Create output state
-  //State xout(x.geometry(), vars, x.time());
+  // call to vader
+  vader_->changeVar(xfsIn, varsVader);
 
-  // Remove fields not in output
-  //x.updateFields(vars);
+  // update the fieldset with the new variables
+  atlas::FieldSet xfsOut;
+  x.toFieldSet(xfsOut);
+  for (auto &var : vars_out.variables()) {
+    xfsOut.add(xfsIn.field(var));
+  }
 
-  // Copy data from temporary state
-  //x = xout;
+  x.fromFieldSet(xfsOut);
 
-  // Trace
   oops::Log::trace() << "VariableChange::changeVar done" << std::endl;
 }
 
@@ -122,60 +114,45 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   // Trace
   oops::Log::trace() << "VariableChange::changeVarInverse starting" << std::endl;
 
-  // Use map to get long names
-  // ---------------------------
-  const std::vector<std::string>& varsVec = vars_out.variables();
-  std::map<std::string,std::string> mapVars = mapVariables_;
-  std::vector<std::string> longNameVec;
-  for (auto &var : varsVec) {
-    longNameVec.push_back(mapVars[var]);
-  }
-  const oops::Variables vars = oops::Variables(longNameVec);
+  // get the input variable change from config
+  const std::vector<std::string>& vars_in = inputParam_;
+  oops::Variables varsVader = vars_out;
 
-  // Return if required vars in input
-  // --------------------------------
-  //if (vars <= x.variables()) {
-  //  x.updateFields(vars);
-  //  oops::Log::info() << "VariableChange::changeVar done (identity)" << std::endl;
-  //  return;
-  //}
-
-  // Call Vader to perform first set of variable transforms
-  // ------------------------------------------------------
-
-  // Record start variables
-  oops::Variables varsFilled = x.variables();
-
-  oops::Variables varsVader = vars;
-  //varsVader -= varsFilled;  // Pass only the needed variables
-
-  // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
-  // it holds the vars NOT fulfilled by Vader, i.e., the vars still to be requested elsewhere.
-  // vader_->changeVar also returns the variables fulfilled by Vader. These variables are allocated
-  // and populated and added to the FieldSet (xfs).
+  // replace var names by the long names from the map in config
+  // and create the fieldset with the required vars only
   atlas::FieldSet xfs;
+  atlas::FieldSet xfsIn;
   x.toFieldSet(xfs);
-  varsFilled += vader_->changeVar(xfs, varsVader);
-  //x.updateFields(varsFilled);
-  x.fromFieldSet(xfs);
+  const std::vector<std::string>& varsVec = xfs.field_names();
+  std::map<std::string,std::string> mapVars = mapVariables_;
+  size_t index = 0;
+  for (auto &var : varsVec) {
+    xfs.field(var).rename(mapVars[var]);
+    if (mapVars[var] == vars_in[index]) {
+      xfsIn.add(xfs.field(var));
+      ++index;
+    }
+  }
 
-  // Create output state
-  //State xout(x.geometry(), vars, x.time());
+  // call to vader
+  vader_->changeVar(xfsIn, varsVader);
 
-  // Remove fields not in output
-  //x.updateFields(vars);
+  // update the fieldset with the new variables
+  atlas::FieldSet xfsOut;
+  x.toFieldSet(xfsOut);
+  for (auto &var : vars_out.variables()) {
+    xfsOut.add(xfsIn.field(var));
+  }
 
-  // Copy data from temporary state
-  //x = xout;
+  x.fromFieldSet(xfsOut);
 
-  // Trace
   oops::Log::trace() << "VariableChange::changeVarInverse done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void VariableChange::print(std::ostream & os) const {
-  os << *variableChange_;
+  os << *vader_;
 }
 
 // -------------------------------------------------------------------------------------------------

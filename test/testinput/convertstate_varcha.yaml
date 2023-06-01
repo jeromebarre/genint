@@ -34,7 +34,6 @@ output geometry:
     levels: 72
   #halo: 1
 variable change:
-  variable change name: default
   input variables: [air_pressure_thickness]
   output variables: [air_pressure_levels]
   vader:
