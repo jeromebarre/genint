@@ -151,8 +151,6 @@ Geometry::Geometry(const Parameters_ & params,
     // Vertical coordinate
     group.verticalCoordinate_ = groupParams.verticalCoordinate.value();
 
-    oops::Log::info() << "verticalCoordinate: " << group.verticalCoordinate_ << std::endl;
-
     // Top Pressure
     group.pTop_ = groupParams.pTop.value();
 

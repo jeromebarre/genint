@@ -19,8 +19,6 @@ State.cc
 State.h
 VariableChange.h
 VariableChange.cc
-#VariableChangeBase.h
-#VariableChangeBase.cc
 )
 
 ecbuild_add_library( TARGET   genint
