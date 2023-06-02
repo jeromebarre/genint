@@ -198,9 +198,6 @@ Geometry::Geometry(const Parameters_ & params,
     // Fill extra geometry fields
     group.extraFields_ = atlas::FieldSet();
 
-    // Vertical coordinates
-
-
     // Vertical unit
     atlas::Field vunit = functionSpace_.createField<double>(
       atlas::option::name("vunit") | atlas::option::levels(group.levels_));
@@ -376,14 +373,8 @@ size_t Geometry::groupIndex(const std::string & var) const {
 // -----------------------------------------------------------------------------
 std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const {
   std::vector<size_t> sizes;
-  //for (const auto & var : vars.variables()) {
-  for (size_t it = 0; it < vars.size(); it++){
-    if ( vars[it] == "air_pressure_levels") {
-      sizes.push_back(levels(vars[it-1]));
-    }
-    else {
-      sizes.push_back(levels(vars[it]));
-    }
+  for (const auto & var : vars.variables()) {
+    sizes.push_back(levels(var));
   }
   return sizes;
 }

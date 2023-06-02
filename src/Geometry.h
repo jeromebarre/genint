@@ -72,27 +72,6 @@ class GroupParameters : public oops::Parameters {
 };
 
 // -----------------------------------------------------------------------------
-/// Group parameters
-
-class VerticalParameters : public oops::Parameters {
-  OOPS_CONCRETE_PARAMETERS(VerticalParameters, Parameters)
-
- public:
-
-   /// Vertical coordinate type
-   oops::Parameter<std::string> vtype{"vtype", this};
-
-   /// Vertical coordinate type
-   oops::Parameter<double> pTop{"model top pressure", 0.0, this};
-
-   /// ak sigma coeficients
-   oops::Parameter<std::vector<double>> ak{"ak coefs", this};
-
-   /// bk sigma coeficients
-   oops::Parameter<std::vector<double>> bk{"bk coefs", this};
-};
-
-// -----------------------------------------------------------------------------
 /// Geometry parameters
 
 class GeometryParameters : public oops::Parameters {
@@ -113,9 +92,6 @@ class GeometryParameters : public oops::Parameters {
 
   /// Halo size
   oops::OptionalParameter<size_t> halo{"halo", this};
-
-  /// Vertical coordinate
-  oops::Parameter<std::vector<VerticalParameters>> vertical{"vertical", this};
 };
 
 // -----------------------------------------------------------------------------

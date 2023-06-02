@@ -36,12 +36,8 @@
 
 #include "src/Geometry.h"
 #include "src/State.h"
-<<<<<<< HEAD
-#include "src/VariableChangeBase.h"
-=======
 
 
->>>>>>> master
 
 namespace genint {
   class Geometry;
@@ -95,17 +91,10 @@ class VariableChange : public util::Printable,
 
 
  private:
-<<<<<<< HEAD
-  void print(std::ostream & os) const override {os << "VariableChange";};
-  std::unique_ptr<VariableChangeBase> variableChange_;
-  std::unique_ptr<vader::Vader> vader_;
-
-=======
   void print(std::ostream &) const override;
   std::map<std::string,std::string> mapVariables_;
   std::vector<std::string> inputParam_;
   std::unique_ptr<vader::Vader> vader_;
->>>>>>> master
 };
 // -----------------------------------------------------------------------------
 
