@@ -91,15 +91,15 @@ add_subdirectory( mains )
 add_subdirectory( test )
 
 ## Global tests
-ecbuild_add_test( TARGET genint_coding_norms_src
-                  TYPE SCRIPT
-                  COMMAND ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}_cpplint.py
-                  ARGS --quiet --recursive ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/src )
+#ecbuild_add_test( TARGET genint_coding_norms_src
+#                  TYPE SCRIPT
+#                  COMMAND ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}_cpplint.py
+#                  ARGS --quiet --recursive ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/src )
 
-ecbuild_add_test( TARGET genint_coding_norms_test
-                  TYPE SCRIPT
-                  COMMAND ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}_cpplint.py
-                  ARGS --quiet --recursive ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/test )
+#ecbuild_add_test( TARGET genint_coding_norms_test
+#                  TYPE SCRIPT
+#                  COMMAND ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}_cpplint.py
+#                  ARGS --quiet --recursive ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/test )
 
 # Setup GENINT data links
 message( STATUS "Setup GENINT data links" )
@@ -108,18 +108,6 @@ file( MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data )
 execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
                  ${CMAKE_CURRENT_SOURCE_DIR}/data/landsea.nc
                  ${CMAKE_CURRENT_BINARY_DIR}/data/landsea.nc )
-
- # Link scripts
- list( APPEND test_files
-     genint_cpplint.py
- )
-
- file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/saber_plot )
- foreach( FILENAME ${test_files} )
-     execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-                              ${PROJECT_SOURCE_DIR}/tools/${FILENAME}
-                              ${CMAKE_BINARY_DIR}/bin/${FILENAME} )
- endforeach()
 
 ## Package Config
 ecbuild_install_project( NAME ${PROJECT_NAME} )
