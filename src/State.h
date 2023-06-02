@@ -59,6 +59,10 @@ class State : public util::Printable,
   void toFieldSet(atlas::FieldSet &) const;
   void fromFieldSet(const atlas::FieldSet &);
 
+/// Utilities
+  const util::DateTime & time() const {return time_;}
+  util::DateTime & time() {return time_;}
+
 /// Other
   void zero();
   void accumul(const double &, const State &);
@@ -66,6 +70,7 @@ class State : public util::Printable,
  private:
   void print(std::ostream &) const;
   std::unique_ptr<Fields> fields_;
+  util::DateTime time_;
 };
 // -----------------------------------------------------------------------------
 

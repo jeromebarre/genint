@@ -39,7 +39,7 @@ Geometry::Geometry(const Parameters_ & params,
   if (halo != boost::none) {
     halo_ = *halo;
   } else {
-    halo_ = 0;
+    halo_ = 1;
   }
 
   // Set flag
@@ -148,7 +148,23 @@ Geometry::Geometry(const Parameters_ & params,
     // Corresponding level for 2D variables (first or last)
     group.lev2d_ = groupParams.lev2d.value();
 
-    // Vertical unit
+    // Vertical coordinate
+    group.verticalCoordinate_ = groupParams.verticalCoordinate.value();
+
+    // Top Pressure
+    group.pTop_ = groupParams.pTop.value();
+
+    // Sigma pressure coefficients
+    if (group.verticalCoordinate_ == "akbk"){
+      const boost::optional<std::vector<double>> &akParams = groupParams.ak.value();
+      const boost::optional<std::vector<double>> &bkParams = groupParams.bk.value();
+      for (size_t jj = 0; jj < group.levels_; ++jj) {
+        group.ak_.push_back((*akParams)[jj]);
+        group.bk_.push_back((*bkParams)[jj]);
+      }
+    }
+
+   // Vertical unit
     const boost::optional<std::vector<double>> &vunitParams = groupParams.vunit.value();
     if (vunitParams != boost::none) {
       if (vunitParams->size() != group.levels_) {

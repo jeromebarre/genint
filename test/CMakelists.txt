@@ -37,8 +37,9 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
 # Test input scripts
 # ------------------
 list( APPEND genint_testinput
-testinput/geometry.yaml
-testinput/convertstate.yaml
+testinput/geometry_regular_lonlat.yaml
+testinput/convertstate_regular_lonlat.yaml
+testinput/convertstate_varcha_regular_lonlat.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
@@ -55,10 +56,15 @@ link_files(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${genint_test
 # ---------------
 ecbuild_add_test( TARGET   genint_test_geometry
                   MPI      6
-                  ARGS     testinput/geometry.yaml
+                  ARGS     testinput/geometry_regular_lonlat.yaml
                   COMMAND  genint_geometry.x )
 
 ecbuild_add_test( TARGET   genint_test_convertstate
                   MPI      6
-                  ARGS     testinput/convertstate.yaml
+                  ARGS     testinput/convertstate_regular_lonlat.yaml
+                  COMMAND  genint_convertstate.x )
+
+ecbuild_add_test( TARGET   genint_test_convertstate_varcha
+                  MPI      6
+                  ARGS     testinput/convertstate_varcha_regular_lonlat.yaml
                   COMMAND  genint_convertstate.x )
