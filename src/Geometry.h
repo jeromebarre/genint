@@ -38,8 +38,11 @@ class GroupParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(GroupParameters, Parameters)
 
  public:
-  /// Variables
-  oops::RequiredParameter<std::vector<std::string>> variables{"variables", this};
+  /// IO Variables
+  oops::RequiredParameter<std::vector<std::string>> variables{"io variables", this};
+
+  /// JEDI variables
+  oops::RequiredParameter<std::map<std::string,std::string>> mapVariables{"map jedi names", this};
 
   /// Number of levels
   oops::Parameter<size_t> levels{"levels", 1, this};
@@ -47,14 +50,25 @@ class GroupParameters : public oops::Parameters {
   /// Corresponding level for 2D variables (first or last)
   oops::Parameter<std::string> lev2d{"lev2d", "first", this};
 
+  // Vertical coordinate type
+  oops::Parameter<std::string> verticalCoordinate{"vertical coordinate", "deltap", this};
+
+  // Top pressure
+  oops::Parameter<double> pTop{"top pressure", 0.0, this};
+
   /// Vertical unit
   oops::OptionalParameter<std::vector<double>> vunit{"vunit", this};
+
+  /// Sigma pressure coefs
+  oops::OptionalParameter<std::vector<double>> ak{"ak", this};
+  oops::OptionalParameter<std::vector<double>> bk{"bk", this};
 
   /// Mask type
   oops::Parameter<std::string> maskType{"mask type", "none", this};
 
   /// Mask path
   oops::Parameter<std::string> maskPath{"mask path", "../genint/data/landsea.nc", this};
+
 };
 
 // -----------------------------------------------------------------------------
@@ -89,10 +103,7 @@ class GeometryParameters : public oops::Parameters {
   oops::RequiredParameter<std::string> functionSpace{"function space", this};
 
   /// Grid
-  oops::OptionalParameter<eckit::LocalConfiguration> grid{"grid", this};
-
-  /// IODA input file (NetCDF format) to get longitude/latitude
-  oops::OptionalParameter<std::string> iodaFile{"ioda file", this};
+  oops::RequiredParameter<eckit::LocalConfiguration> grid{"grid", this};
 
   /// Partitioner
   oops::Parameter<std::string> partitioner{"partitioner", "equal_regions", this};
@@ -122,6 +133,7 @@ class Geometry : public util::Printable,
   Geometry(const Geometry &);
 
   const eckit::mpi::Comm & getComm() const {return comm_;}
+  const size_t halo() const {return halo_;}
   const atlas::Grid grid() const {return grid_;}
   const std::string gridType() const {return gridType_;}
   const atlas::grid::Partitioner partitioner() const {return partitioner_;}
@@ -133,16 +145,24 @@ class Geometry : public util::Printable,
   const atlas::FieldSet & extraFields(const size_t & groupIndex) const
     {return groups_[groupIndex].extraFields_;}
   size_t levels(const size_t & groupIndex) const {return groups_[groupIndex].levels_;}
-  size_t levels(const std::string & var) const {return groups_[groupIndex_.at(var)].levels_;}
+  size_t levels(const std::string & var) const;
   size_t groups() const {return groups_.size();}
-  size_t groupIndex(const std::string & var) const {return groupIndex_.at(var);}
+  size_t groupIndex(const std::string & var) const;
 
   size_t variableSize(const std::string &) const;
   size_t maskLevel(const std::string &, const size_t &) const;
   std::vector<size_t> variableSizes(const oops::Variables & vars) const;
-  void latlon(std::vector<double> &, std::vector<double> &, const bool) const {}
+  void latlon(std::vector<double> &, std::vector<double> &, const bool) const;
   bool levelsAreTopDown() const {return true;}
-  bool iodaBased() const {return iodaBased_;}
+
+  // Functions to retrieve geometry features
+  const std::vector<double> & ak() const {return groups_[0].ak_;}
+  const std::vector<double> & bk() const {return groups_[0].bk_;}
+  const double & pTop() const {return groups_[0].pTop_;}
+  const double & levels() const {return groups_[0].levels_;}
+
+  // Mapping io var to jedi names
+  const std::map<std::string,std::string> & mapVariables() const {return groups_[0].mapVariables_;}
 
  private:
   void print(std::ostream &) const;
@@ -160,12 +180,16 @@ class Geometry : public util::Printable,
   struct groupData {
     size_t levels_;
     std::string lev2d_;
+    std::string verticalCoordinate_;
     std::vector<double> vunit_;
+    std::vector<double> ak_;
+    std::vector<double> bk_;
+    double pTop_;
+    std::map<std::string,std::string> mapVariables_;
     atlas::FieldSet extraFields_;
     double gmaskSize_;
   };
   std::vector<groupData> groups_;
-  bool iodaBased_;
 };
 // -----------------------------------------------------------------------------
 

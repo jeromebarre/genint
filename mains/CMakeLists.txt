@@ -12,11 +12,24 @@ endif()
 
 # Executables
 
+ecbuild_add_executable( TARGET  genint_geometry.x
+                        SOURCES genintGeometry.cc
+                        LIBS    genint )
+
 ecbuild_add_executable( TARGET  genint_convertstate.x
                         SOURCES genintConvertState.cc
                         LIBS    genint )
 
+<<<<<<< HEAD
 ecbuild_add_executable( TARGET  genint_hofx3d.x
                         SOURCES genintHofX3D.cc
                         LIBS    genint
                                 ufo )
+=======
+#ecbuild_add_executable( TARGET  genint_hofx3d.x
+#                        SOURCES genintHofX3D.cc
+#                        LIBS    genint
+#                                ${vader_LIBRARIES}
+#                                saber
+#                                ufo )
+>>>>>>> master
