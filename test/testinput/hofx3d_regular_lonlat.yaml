@@ -6,14 +6,32 @@ geometry:
     type: regular_lonlat
     N: 90
   groups:
-  - variables:
+  - io variables:
     - SpeciesConc_NO2
     - SpeciesConc_CO
     - delp
+    - air_pressure_levels
+    map jedi names:
+      SpeciesConc_NO2: volume_mixing_ratio_of_no2
+      SpeciesConc_CO: volume_mixing_ratio_of_co
+      delp: air_pressure_thickness
+      air_pressure_levels: air_pressure_levels
     levels: 72
-  halo: 1
+    vertical coordinate: deltap
+    top pressure: 0.01
+# variable change:
+#   input variables: [air_pressure_thickness]
+#   output variables: [air_pressure_levels]
+#   vader:
+#     recipe parameters:
+#     - recipe name: AirPressureAtInterface_B
 state:
   state variables:
+  - SpeciesConc_NO2
+  - SpeciesConc_CO
+  - delp
+  - air_pressure_levels
+  infile variables:
   - SpeciesConc_NO2
   - SpeciesConc_CO
   - delp

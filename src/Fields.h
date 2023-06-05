@@ -33,7 +33,11 @@ class Fields : public util::Printable,
   static const std::string classname() {return "genint::Fields";}
 
 // Constructors
-  Fields(const Geometry &, const oops::Variables &, const util::DateTime &);
+  Fields(const Geometry &, const oops::Variables &,
+         const oops::Variables &, const util::DateTime &,
+         const eckit::Configuration &);
+  Fields(const Geometry &, const oops::Variables &,
+         const util::DateTime &);
   Fields(const Fields &, const Geometry &);
   Fields(const Fields &, const bool);
   Fields(const Fields &);
@@ -77,7 +81,8 @@ class Fields : public util::Printable,
  private:
   void print(std::ostream &) const override;
   std::shared_ptr<const Geometry> geom_;
-  const oops::Variables vars_;
+  oops::Variables vars_;
+  oops::Variables varsf_;
   util::DateTime time_;
   atlas::FieldSet fset_;
 };
