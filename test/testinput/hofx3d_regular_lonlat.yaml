@@ -1,4 +1,4 @@
-window begin: 2021-07-31T21:00:00Z
+window begin: 2020-09-03T18:00:00Z
 window length: PT6H
 geometry:
   function space: StructuredColumns
@@ -19,12 +19,7 @@ geometry:
     levels: 72
     vertical coordinate: deltap
     top pressure: 0.01
-# variable change:
-#   input variables: [air_pressure_thickness]
-#   output variables: [air_pressure_levels]
-#   vader:
-#     recipe parameters:
-#     - recipe name: AirPressureAtInterface_B
+
 state:
   state variables:
   - SpeciesConc_NO2
@@ -36,7 +31,7 @@ state:
   - SpeciesConc_CO
   - delp
   filepath: /Users/jeromebarre/backgrounds/GEOS-CF/geos_cf_N90.20210801_0000z
-  date: '2021-08-01T00:00:00Z'
+  date: '2020-09-03T21:00:00Z'
 observations:
   observers:
   - obs space:

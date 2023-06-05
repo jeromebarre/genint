@@ -72,45 +72,30 @@ VariableChange::~VariableChange() {}
 void VariableChange::changeVar(State & x, const oops::Variables & vars_out) const {
   // Trace
   oops::Log::trace() << "VariableChange::changeVar starting" << std::endl;
-  oops::Log::trace() << "x.field_names()" << std::endl;
-  oops::Log::trace() << x.fields().variables() << std::endl;
 
   // get the input variable change from config
-  //const std::vector<std::string>& vars_in = inputParam_;
   oops::Variables varsVader = vars_out;
 
   // replace var names by the long names from the map in config
   // and create the fieldset with the required vars only
   atlas::FieldSet xfs;
-  //atlas::FieldSet xfsIn;
   x.toFieldSet(xfs);
   const std::vector<std::string>& varsVec = xfs.field_names();
   std::map<std::string,std::string> mapVars = mapVariables_;
-  //size_t index = 0;
   for (auto &var : varsVec) {
     xfs.field(var).rename(mapVars[var]);
-    //if (mapVars[var] == vars_in[index]) {
-    //  xfsIn.add(xfs.field(var));
-    //  ++index;
-    //}
   }
 
   // call to vader
-  //vader_->changeVar(xfsIn, varsVader);
+  vader_->changeVar(xfs, varsVader);
 
   // update the fieldset with the new variables
-  //atlas::FieldSet xfsOut;
-  //x.toFieldSet(xfsOut);
   oops::Log::trace() << varsVec << std::endl;
   for (auto &var : varsVec) {
-    //xfsOut.field(var) = xfsIn.field(var);
     xfs.field(var).rename(var);
   }
   x.fromFieldSet(xfs);
 
-  oops::Log::trace() << "Varcha State" << std::endl;
-  oops::Log::trace() << xfs.field_names() << std::endl;
-  oops::Log::trace() << x.variables() << std::endl;
   oops::Log::trace() << "VariableChange::changeVar done" << std::endl;
 }
 
@@ -121,36 +106,27 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   oops::Log::trace() << "VariableChange::changeVarInverse starting" << std::endl;
 
   // get the input variable change from config
-  //const std::vector<std::string>& vars_in = inputParam_;
   oops::Variables varsVader = vars_out;
 
   // replace var names by the long names from the map in config
   // and create the fieldset with the required vars only
   atlas::FieldSet xfs;
-  //atlas::FieldSet xfsIn;
   x.toFieldSet(xfs);
   const std::vector<std::string>& varsVec = xfs.field_names();
   std::map<std::string,std::string> mapVars = mapVariables_;
-  //size_t index = 0;
   for (auto &var : varsVec) {
     xfs.field(var).rename(mapVars[var]);
-    // if (mapVars[var] == vars_in[index]) {
-    //   xfsIn.add(xfs.field(var));
-    //   ++index;
-    //}
   }
 
   // call to vader
-  //vader_->changeVar(xfsIn, varsVader);
   vader_->changeVar(xfs, varsVader);
+
   // update the fieldset with the new variables
-  atlas::FieldSet xfsOut;
-  x.toFieldSet(xfsOut);
-  for (auto &var : vars_out.variables()) {
-    //xfsOut.field(var) = xfsIn.field(var);
-    xfsOut.field(var) = xfs.field(var);
+  oops::Log::trace() << varsVec << std::endl;
+  for (auto &var : varsVec) {
+    xfs.field(var).rename(var);
   }
-  x.fromFieldSet(xfsOut);
+  x.fromFieldSet(xfs);
 
   oops::Log::trace() << "VariableChange::changeVarInverse done" << std::endl;
 }

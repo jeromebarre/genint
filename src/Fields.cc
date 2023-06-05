@@ -73,8 +73,6 @@ Fields::Fields(const Geometry & geom, const oops::Variables & vars,
       fset_.add(field);
     }
   }
-  // Set fields to zero
-  //this->zero();
 
   oops::Log::trace() << "Fields::Fields done" << std::endl;
 }
