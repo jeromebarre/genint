@@ -37,8 +37,6 @@
 #include "src/Geometry.h"
 #include "src/State.h"
 
-
-
 namespace genint {
   class Geometry;
   class State;
@@ -48,7 +46,6 @@ namespace genint {
 class VariableChangeParameters : public oops::VariableChangeParametersBase {
   OOPS_CONCRETE_PARAMETERS(VariableChangeParameters, oops::VariableChangeParametersBase)
  public:
-   //oops::OptionalParameter<std::string> name{"variable change name", this};
    oops::Parameter<std::map<std::string, std::vector<std::string>>> vaderCustomCookbook{
      "vader custom cookbook",
      // Default VADER cookbook for genint
@@ -63,8 +60,6 @@ class VariableChangeParameters : public oops::VariableChangeParametersBase {
        {"ln_air_pressure_at_interface", {"LnAirPressureAtInterface_A"}}
      },
      this};
-   oops::RequiredParameter<std::vector<std::string>>
-                                      inputParam{"input variables",this};
 
    oops::Parameter<vader::VaderParameters> vaderParam{"vader", {}, this};
 
@@ -79,7 +74,6 @@ class VariableChange : public util::Printable,
   static const std::string classname() {return "genint::VariableChange";}
 
   typedef VariableChangeParameters Parameters_;
-  const std::vector<std::string> & inputParam() const {return inputParam_;}
 
   explicit VariableChange(const Parameters_ &, const Geometry &);
   ~VariableChange();
@@ -88,12 +82,9 @@ class VariableChange : public util::Printable,
   void changeVar(State &, const oops::Variables &) const;
   void changeVarInverse(State &, const oops::Variables &) const;
 
-
-
  private:
   void print(std::ostream &) const override;
   std::map<std::string,std::string> mapVariables_;
-  std::vector<std::string> inputParam_;
   std::unique_ptr<vader::Vader> vader_;
 };
 // -----------------------------------------------------------------------------

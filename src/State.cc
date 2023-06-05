@@ -31,10 +31,11 @@ State::State(const Geometry & resol, const eckit::Configuration & file)
   : fields_()
 {
   oops::Variables vars = oops::Variables(file, "state variables");
-  fields_.reset(new Fields(resol, vars, util::DateTime()));
+  oops::Variables varsf = oops::Variables(file, "infile variables");
+  fields_.reset(new Fields(resol, vars, varsf, util::DateTime(), file));
   if (file.has("filepath")) {
     oops::Log::info() << "Info     : Create state from file" << std::endl;
-    fields_->read(file);
+    //fields_->read(file);
   } else {
     oops::Log::info() << "Info     : Create empty state" << std::endl;
     if (file.has("constant value")) {

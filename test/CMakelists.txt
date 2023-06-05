@@ -40,6 +40,7 @@ list( APPEND genint_testinput
 testinput/geometry_regular_lonlat.yaml
 testinput/convertstate_regular_lonlat.yaml
 testinput/convertstate_varcha_regular_lonlat.yaml
+testinput/hofx3d_regular_lonlat.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
@@ -54,17 +55,22 @@ link_files(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${genint_test
 
 # Interface tests
 # ---------------
-ecbuild_add_test( TARGET   genint_test_geometry
+ecbuild_add_test( TARGET   genint_test_geometry_regular_lonlat
                   MPI      6
                   ARGS     testinput/geometry_regular_lonlat.yaml
                   COMMAND  genint_geometry.x )
 
-ecbuild_add_test( TARGET   genint_test_convertstate
+ecbuild_add_test( TARGET   genint_test_convertstate_regular_lonlat
                   MPI      6
                   ARGS     testinput/convertstate_regular_lonlat.yaml
                   COMMAND  genint_convertstate.x )
 
-ecbuild_add_test( TARGET   genint_test_convertstate_varcha
+ecbuild_add_test( TARGET   genint_test_convertstate_varcha_regular_lonlat
                   MPI      6
                   ARGS     testinput/convertstate_varcha_regular_lonlat.yaml
                   COMMAND  genint_convertstate.x )
+
+ecbuild_add_test( TARGET   genint_test_hofx3d_regular_lonlat
+                  MPI      6
+                  ARGS     testinput/hofx3d_regular_lonlat.yaml
+                  COMMAND  genint_hofx3d.x )

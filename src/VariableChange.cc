@@ -25,7 +25,9 @@ namespace genint {
 // -------------------------------------------------------------------------------------------------
 
 VariableChange::VariableChange(const Parameters_ & params, const Geometry & geometry)
-  : mapVariables_(geometry.mapVariables()), inputParam_(), vader_() {
+    : mapVariables_(geometry.mapVariables()), vader_() {
+//  : mapVariables_(geometry.mapVariables()), inputParam_(), vader_() {
+
 
   // Create vader cookbook
   vader::cookbookConfigType vaderCustomCookbook =
@@ -51,9 +53,7 @@ VariableChange::VariableChange(const Parameters_ & params, const Geometry & geom
   vaderConstructConfig.addToConfig<int>("nLevels", geometry.levels());
 
 
-  inputParam_ = params.inputParam;
-  oops::Log::trace() << "inputParam_" << std::endl;
-  oops::Log::trace() << inputParam_ << std::endl;
+  //inputParam_ = params.inputParam;
 
   // Create vader with genint custom cookbook
   vader_.reset(new vader::Vader(params.vaderParam,
@@ -74,36 +74,27 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   oops::Log::trace() << "VariableChange::changeVar starting" << std::endl;
 
   // get the input variable change from config
-  const std::vector<std::string>& vars_in = inputParam_;
   oops::Variables varsVader = vars_out;
 
   // replace var names by the long names from the map in config
   // and create the fieldset with the required vars only
   atlas::FieldSet xfs;
-  atlas::FieldSet xfsIn;
   x.toFieldSet(xfs);
   const std::vector<std::string>& varsVec = xfs.field_names();
   std::map<std::string,std::string> mapVars = mapVariables_;
-  size_t index = 0;
   for (auto &var : varsVec) {
     xfs.field(var).rename(mapVars[var]);
-    if (mapVars[var] == vars_in[index]) {
-      xfsIn.add(xfs.field(var));
-      ++index;
-    }
   }
 
   // call to vader
-  vader_->changeVar(xfsIn, varsVader);
+  vader_->changeVar(xfs, varsVader);
 
   // update the fieldset with the new variables
-  atlas::FieldSet xfsOut;
-  x.toFieldSet(xfsOut);
-  for (auto &var : vars_out.variables()) {
-    xfsOut.add(xfsIn.field(var));
+  oops::Log::trace() << varsVec << std::endl;
+  for (auto &var : varsVec) {
+    xfs.field(var).rename(var);
   }
-
-  x.fromFieldSet(xfsOut);
+  x.fromFieldSet(xfs);
 
   oops::Log::trace() << "VariableChange::changeVar done" << std::endl;
 }
@@ -115,36 +106,27 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   oops::Log::trace() << "VariableChange::changeVarInverse starting" << std::endl;
 
   // get the input variable change from config
-  const std::vector<std::string>& vars_in = inputParam_;
   oops::Variables varsVader = vars_out;
 
   // replace var names by the long names from the map in config
   // and create the fieldset with the required vars only
   atlas::FieldSet xfs;
-  atlas::FieldSet xfsIn;
   x.toFieldSet(xfs);
   const std::vector<std::string>& varsVec = xfs.field_names();
   std::map<std::string,std::string> mapVars = mapVariables_;
-  size_t index = 0;
   for (auto &var : varsVec) {
     xfs.field(var).rename(mapVars[var]);
-    if (mapVars[var] == vars_in[index]) {
-      xfsIn.add(xfs.field(var));
-      ++index;
-    }
   }
 
   // call to vader
-  vader_->changeVar(xfsIn, varsVader);
+  vader_->changeVar(xfs, varsVader);
 
   // update the fieldset with the new variables
-  atlas::FieldSet xfsOut;
-  x.toFieldSet(xfsOut);
-  for (auto &var : vars_out.variables()) {
-    xfsOut.add(xfsIn.field(var));
+  oops::Log::trace() << varsVec << std::endl;
+  for (auto &var : varsVec) {
+    xfs.field(var).rename(var);
   }
-
-  x.fromFieldSet(xfsOut);
+  x.fromFieldSet(xfs);
 
   oops::Log::trace() << "VariableChange::changeVarInverse done" << std::endl;
 }
