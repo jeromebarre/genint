@@ -38,8 +38,8 @@ class GroupParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(GroupParameters, Parameters)
 
  public:
-  /// IO Variables
-  oops::RequiredParameter<std::vector<std::string>> variables{"io variables", this};
+ //  /// IO Variables
+ //  oops::RequiredParameter<std::vector<std::string>> variables{"io variables", this};
 
   /// JEDI variables
   oops::RequiredParameter<std::map<std::string,std::string>> mapVariables{"map jedi names", this};

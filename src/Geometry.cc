@@ -123,28 +123,45 @@ Geometry::Geometry(const Parameters_ & params,
   // Groups
   size_t groupIndex = 0;
   for (const auto & groupParams : params.groups.value()) {
-    // Use this group index for all the group variables
-    for (const auto & var : groupParams.variables.value()) {
-      if (groupIndex_.find(var) != groupIndex_.end()) {
-        ABORT("Same variable present in distinct groups");
-      } else {
-        groupIndex_[var] = groupIndex;
-      }
-    }
 
     // Define group
     groupData group;
 
+    // JEDI varnames
+    group.mapVariables_ = groupParams.mapVariables.value();
+    oops::Log::info() << group.mapVariables_ << std::endl;
+    oops::Log::info() << "Info     : Variable name mapping: " << std::endl;
+    oops::Log::info() << "Info     : io var -> jedi var"  << std::endl;
+    for(std::map<std::string,std::string>::iterator it = group.mapVariables_.begin(); it != group.mapVariables_.end(); ++it) {
+      oops::Log::info() << it->first << " -> " << it->second << std::endl;
+      groupIndex_[it->first] = groupIndex;
+
+      // if (groupIndex_.find(it->first) != groupIndex_.end()) {
+      //   ABORT("Same variable present in distinct groups");
+      // } else {
+      //   groupIndex_[it->first] = groupIndex;
+      // }
+    }
+
+    // oops::Log::info() << group.mapVariables_ << std::endl;
+    // oops::Log::info() << "Info     : Variable name mapping: " << std::endl;
+    // oops::Log::info() << "Info     : io var -> jedi var"  << std::endl;
+    // for (const auto & var : groupParams.variables.value()) {
+    //    oops::Log::info() << var << " -> " << group.mapVariables_[var] << std::endl;
+    // }
+
+    // // Use this group index for all the group variables
+    // for (const auto & var : groupParams.variables.value()) {
+    //   if (groupIndex_.find(var) != groupIndex_.end()) {
+    //     ABORT("Same variable present in distinct groups");
+    //   } else {
+    //     groupIndex_[var] = groupIndex;
+    //   }
+    // }
+
     // Number of levels
     group.levels_ = groupParams.levels.value();
 
-    // JEDI varnames
-    group.mapVariables_ = groupParams.mapVariables.value();
-    oops::Log::info() << "Info     : Variable name mapping: " << std::endl;
-    oops::Log::info() << "Info     : io var -> jedi var"  << std::endl;
-    for (const auto & var : groupParams.variables.value()) {
-       oops::Log::info() << var << " -> " << group.mapVariables_[var] << std::endl;
-    }
     // Corresponding level for 2D variables (first or last)
     group.lev2d_ = groupParams.lev2d.value();
 
