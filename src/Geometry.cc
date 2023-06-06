@@ -135,29 +135,7 @@ Geometry::Geometry(const Parameters_ & params,
     for(std::map<std::string,std::string>::iterator it = group.mapVariables_.begin(); it != group.mapVariables_.end(); ++it) {
       oops::Log::info() << it->first << " -> " << it->second << std::endl;
       groupIndex_[it->first] = groupIndex;
-
-      // if (groupIndex_.find(it->first) != groupIndex_.end()) {
-      //   ABORT("Same variable present in distinct groups");
-      // } else {
-      //   groupIndex_[it->first] = groupIndex;
-      // }
     }
-
-    // oops::Log::info() << group.mapVariables_ << std::endl;
-    // oops::Log::info() << "Info     : Variable name mapping: " << std::endl;
-    // oops::Log::info() << "Info     : io var -> jedi var"  << std::endl;
-    // for (const auto & var : groupParams.variables.value()) {
-    //    oops::Log::info() << var << " -> " << group.mapVariables_[var] << std::endl;
-    // }
-
-    // // Use this group index for all the group variables
-    // for (const auto & var : groupParams.variables.value()) {
-    //   if (groupIndex_.find(var) != groupIndex_.end()) {
-    //     ABORT("Same variable present in distinct groups");
-    //   } else {
-    //     groupIndex_[var] = groupIndex;
-    //   }
-    // }
 
     // Number of levels
     group.levels_ = groupParams.levels.value();
@@ -378,7 +356,7 @@ size_t Geometry::levels(const std::string & var) const {
   if (groupIndex_.count(var) == 0) {
     ABORT("Variable " + var + " not found in groupIndex_");
   }
-  return groups_[groupIndex_.at(var)].levels_;
+  return  groups_[groupIndex_.at(var)].levels_;
 }
 // -----------------------------------------------------------------------------
 size_t Geometry::groupIndex(const std::string & var) const {
@@ -394,6 +372,16 @@ std::vector<size_t> Geometry::variableSizes(const oops::Variables & vars) const 
     sizes.push_back(levels(var));
   }
   return sizes;
+}
+// -----------------------------------------------------------------------------
+std::map<std::string,std::string> Geometry::mapVariables() const {
+  std::map<std::string,std::string> mapVar;
+  for (size_t groupIndex = 0; groupIndex < groups_.size(); ++groupIndex){
+    for (const auto & valuePair : groups_[groupIndex].mapVariables_) {
+        mapVar.insert({valuePair.first, valuePair.second});
+    }
+  }
+  return mapVar;
 }
 // -----------------------------------------------------------------------------
 void Geometry::latlon(std::vector<double> & lats, std::vector<double> & lons,
