@@ -20,6 +20,7 @@
 #include "eckit/mpi/Comm.h"
 
 #include "oops/mpi/mpi.h"
+#include "oops/util/Logger.h"
 
 #include "oops/base/Variables.h"
 #include "oops/util/ObjectCounter.h"
@@ -38,7 +39,7 @@ class GroupParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(GroupParameters, Parameters)
 
  public:
-   
+
   /// JEDI variables
   oops::RequiredParameter<std::map<std::string,std::string>> mapVariables{"map jedi names", this};
 
@@ -133,7 +134,7 @@ class Geometry : public util::Printable,
   const std::vector<double> & ak() const {return groups_[0].ak_;}
   const std::vector<double> & bk() const {return groups_[0].bk_;}
   const double & pTop() const {return groups_[0].pTop_;}
-  const double & levels() const {return groups_[0].levels_;}
+  const size_t & levels() const {return groups_[0].levels_;}
 
   // Mapping io var to jedi names
   std::map<std::string,std::string> mapVariables() const;

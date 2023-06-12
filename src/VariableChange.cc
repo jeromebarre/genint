@@ -47,10 +47,10 @@ VariableChange::VariableChange(const Parameters_ & params, const Geometry & geom
   // Add geometry data to vader constructor config
   vaderConstructConfig.addToConfig<double>("air_pressure_at_top_of_atmosphere_model",
                                            geometry.pTop());
-  vaderConstructConfig.addToConfig<std::vector<double>>
-                                  ("sigma_pressure_hybrid_coordinate_a_coefficient", geometry.ak());
-  vaderConstructConfig.addToConfig<std::vector<double>>
-                                  ("sigma_pressure_hybrid_coordinate_b_coefficient", geometry.bk());
+  vaderConstructConfig.addToConfig<std::vector<double>>(
+              "sigma_pressure_hybrid_coordinate_a_coefficient", geometry.ak());
+  vaderConstructConfig.addToConfig<std::vector<double>>(
+              "sigma_pressure_hybrid_coordinate_b_coefficient", geometry.bk());
   vaderConstructConfig.addToConfig<int>("nLevels", geometry.levels());
 
 

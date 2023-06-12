@@ -153,7 +153,7 @@ Geometry::Geometry(const Parameters_ & params,
     if (group.verticalCoordinate_ == "akbk"){
       const boost::optional<std::vector<double>> &akParams = groupParams.ak.value();
       const boost::optional<std::vector<double>> &bkParams = groupParams.bk.value();
-      for (size_t jj = 0; jj < group.levels_; ++jj) {
+      for (size_t jj = 0; jj < group.levels_ + 1; ++jj) {
         group.ak_.push_back((*akParams)[jj]);
         group.bk_.push_back((*bkParams)[jj]);
       }
@@ -336,8 +336,15 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_), halo_(other.hal
     // Copy number of levels
     group.levels_ = other.groups_[groupIndex].levels_;
 
+    // top level
+    group.pTop_ = other.groups_[groupIndex].pTop_;
+
     // Copy corresponding level for 2D variables (first or last)
     group.lev2d_ = other.groups_[groupIndex].lev2d_;
+
+    // copy ak and bk
+    group.ak_ = other.groups_[groupIndex].ak_;
+    group.bk_ = other.groups_[groupIndex].bk_;
 
     // Copy vertical unit
     group.vunit_ = other.groups_[groupIndex].vunit_;
@@ -457,6 +464,8 @@ void Geometry::print(std::ostream & os) const {
     os << prefix << "  Vertical levels: " << std::endl;
     os << prefix << "  - number: " << levels(groupIndex) << std::endl;
     os << prefix << "  - vunit: " << groups_[groupIndex].vunit_ << std::endl;
+    os << prefix << "  - ak: " << groups_[groupIndex].ak_ << std::endl;
+    os << prefix << "  - bk: " << groups_[groupIndex].bk_ << std::endl;
     os << prefix << "  Mask size: " << static_cast<int>(groups_[groupIndex].gmaskSize_*100.0)
        << "%" << std::endl;
   }
