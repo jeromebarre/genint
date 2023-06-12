@@ -36,7 +36,7 @@ states:
     - SpeciesConc_NO2
     - SpeciesConc_CO
     - delp
-    - air_pressure_levels
+    #- air_pressure_levels
     infile variables:
     - SpeciesConc_NO2
     - SpeciesConc_CO

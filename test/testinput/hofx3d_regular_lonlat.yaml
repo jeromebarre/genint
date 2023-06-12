@@ -10,10 +10,12 @@ geometry:
       SpeciesConc_NO2: volume_mixing_ratio_of_no2
       SpeciesConc_CO: volume_mixing_ratio_of_co
       delp: air_pressure_thickness
-      air_pressure_levels: air_pressure_levels
     levels: 72
     vertical coordinate: deltap
     top pressure: 0.01
+  - map jedi names:
+      air_pressure_levels: air_pressure_levels
+    levels: 73
   - map jedi names:
       TropCol_NO2: tropopspheric_column_of_no2
     levels: 1
@@ -29,8 +31,8 @@ state:
   infile variables:
   - SpeciesConc_NO2
   - SpeciesConc_CO
-  - TropCol_NO2
   - delp
+  - TropCol_NO2
   filepath: /Users/jeromebarre/backgrounds/GEOS-CF/geos_cf_N90.20210801_0000z
   date: '2020-09-03T21:00:00Z'
 observations:

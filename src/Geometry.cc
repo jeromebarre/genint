@@ -157,6 +157,12 @@ Geometry::Geometry(const Parameters_ & params,
         group.ak_.push_back((*akParams)[jj]);
         group.bk_.push_back((*bkParams)[jj]);
       }
+      auto maxAk = max_element(group.ak_.begin(),group.ak_.end());
+      if (*maxAk < 1.0) {
+        for(size_t i=0;i<group.ak_.size();++i) {
+          group.ak_[i] *= 100000.0;
+        }
+      }
     }
 
    // Vertical unit

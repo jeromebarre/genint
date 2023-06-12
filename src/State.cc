@@ -73,6 +73,10 @@ State & State::operator+=(const Increment & dx) {
 // -----------------------------------------------------------------------------
 /// I/O and diagnostics
 // -----------------------------------------------------------------------------
+double State::normVar(const std::string & var) const {
+  fields_->normVar(var);
+}
+// -----------------------------------------------------------------------------
 void State::read(const eckit::Configuration & files) {
   fields_->read(files);
   fields_->fields().haloExchange();
@@ -103,6 +107,19 @@ void State::print(std::ostream & os) const {
 }
 // -----------------------------------------------------------------------------
 /// ATLAS FieldSet accessor
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+void State::removeFields(atlas::FieldSet & fset, const oops::Variables & vars) {
+  fields_->removeFields(fset, vars);
+}
+// -----------------------------------------------------------------------------
+void State::mergeFieldSets(atlas::FieldSet & fset) {
+  fields_->mergeFieldSets(fset);
+}
+// -----------------------------------------------------------------------------
+void State::updateFields(const oops::Variables & vars) {
+  fields_->updateFields(vars);
+}
 // -----------------------------------------------------------------------------
 void State::toFieldSet(atlas::FieldSet & fset) const {
   fields_->toFieldSet(fset);
