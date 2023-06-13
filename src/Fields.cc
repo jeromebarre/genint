@@ -43,36 +43,24 @@
 namespace genint {
 // -----------------------------------------------------------------------------
 Fields::Fields(const Geometry & geom, const oops::Variables & vars,
-               const oops::Variables & varsf, const util::DateTime & time,
-               const eckit::Configuration & config):
-  geom_(new Geometry(geom)), vars_(vars), varsf_(varsf), time_(time)
+               const util::DateTime & time, const eckit::Configuration & config):
+  geom_(new Geometry(geom)), vars_(vars), time_(time)
 {
   oops::Log::trace() << "Fields::Fields starting" << std::endl;
+
   // Reset ATLAS fieldset
   fset_ = atlas::FieldSet();
-  std::vector<size_t> variableSizes;
-  for (const auto & var : varsf_.variables()) {
-    variableSizes.push_back(geom_->levels(var));
+
+  for (const auto & var : vars_.variables()) {
     // Create field
+
     atlas::Field field = geom_->functionSpace().createField<double>(
       atlas::option::name(var) | atlas::option::levels(geom_->levels(var)));
     fset_.add(field);
   }
 
-  util::readFieldSet(geom_->getComm(),
-                     geom_->functionSpace(),
-                     variableSizes,
-                     varsf_.variables(),
-                     config,
-                     fset_);
-
-  for (const auto & var : vars_.variables()) {
-    if (!fset_.has(var)) {
-      atlas::Field field = geom_->functionSpace().createField<double>(
-        atlas::option::name(var) | atlas::option::levels(geom_->levels(var)));
-      fset_.add(field);
-    }
-  }
+  // Set fields to zero
+  this->zero();
 
   oops::Log::trace() << "Fields::Fields done" << std::endl;
 }
@@ -727,15 +715,15 @@ void Fields::fromFieldSet(const atlas::FieldSet & fset) {
 void Fields::read(const eckit::Configuration & config) {
   // Create variableSizes
   std::vector<size_t> variableSizes;
-  for (const auto & var : varsf_.variables()) {
+  for (const auto & var : vars_.variables()) {
     variableSizes.push_back(geom_->levels(var));
   }
-  oops::Log::info() << "read vars: " << varsf_.variables() <<  std::endl;
+  oops::Log::info() << "read vars: " << vars_.variables() <<  std::endl;
   // Read fieldset
   util::readFieldSet(geom_->getComm(),
                      geom_->functionSpace(),
                      variableSizes,
-                     varsf_.variables(),
+                     vars_.variables(),
                      config,
                      fset_);
 }

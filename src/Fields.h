@@ -34,8 +34,7 @@ class Fields : public util::Printable,
 
 // Constructors
   Fields(const Geometry &, const oops::Variables &,
-         const oops::Variables &, const util::DateTime &,
-         const eckit::Configuration &);
+         const util::DateTime &, const eckit::Configuration &);
   Fields(const Geometry &, const oops::Variables &,
          const util::DateTime &);
   Fields(const Fields &, const Geometry &);
@@ -86,7 +85,6 @@ class Fields : public util::Printable,
   void print(std::ostream &) const override;
   std::shared_ptr<const Geometry> geom_;
   oops::Variables vars_;
-  oops::Variables varsf_;
   util::DateTime time_;
   atlas::FieldSet fset_;
 };

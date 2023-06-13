@@ -36,11 +36,6 @@ states:
     - SpeciesConc_NO2
     - SpeciesConc_CO
     - delp
-    #- air_pressure_levels
-    infile variables:
-    - SpeciesConc_NO2
-    - SpeciesConc_CO
-    - delp
     filepath: /Users/jeromebarre/backgrounds/GEOS-CF/geos_cf_N90.20210801_0000z
     date: '2021-08-01T00:00:00Z'
   output:

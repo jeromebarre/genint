@@ -43,6 +43,7 @@ testinput/convertstate_nonuni_lonlat.yaml
 testinput/convertstate_varcha_regular_lonlat.yaml
 testinput/convertstate_varcha_nonuni_lonlat.yaml
 testinput/hofx3d_regular_lonlat.yaml
+testinput/hofx3d_nonuni_lonlat.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
@@ -85,4 +86,9 @@ ecbuild_add_test( TARGET   genint_test_convertstate_varcha_nonuni_lonlat
 ecbuild_add_test( TARGET   genint_test_hofx3d_regular_lonlat
                   MPI      6
                   ARGS     testinput/hofx3d_regular_lonlat.yaml
+                  COMMAND  genint_hofx3d.x )
+
+ecbuild_add_test( TARGET   genint_test_hofx3d_nonuni_lonlat
+                  MPI      6
+                  ARGS     testinput/hofx3d_nonuni_lonlat.yaml
                   COMMAND  genint_hofx3d.x )

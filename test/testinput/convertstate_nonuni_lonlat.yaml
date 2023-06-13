@@ -37,10 +37,6 @@ states:
     - NO2
     - CO
     - PS
-    infile variables:
-    - NO2
-    - CO
-    - PS
     filepath: /Users/jeromebarre/backgrounds/CAM-Chem/camchem_N288x192
     date: '2021-08-01T00:00:00Z'
   output:
