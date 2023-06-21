@@ -59,7 +59,7 @@ link_files(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${genint_test
 # Test background data
 # --------------------
 list( APPEND genint_testbkg
-Data/background/geos_cf_N90_subset.20210801_0000z.nc
+Data/background/geos_cf_N10_subset.20210801_0000z.nc
 Data/background/camchem_N288x192_subset.nc
 Data/background/wrfout_d01_subset_20230519_000000.nc
 )

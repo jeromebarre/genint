@@ -2,7 +2,7 @@ input geometry:
   function space: StructuredColumns
   grid:
     type: regular_lonlat
-    N: 90
+    N: 10
   groups:
   - map jedi names:
       SpeciesConc_NO2: volume_mixing_ratio_of_no2
@@ -16,7 +16,7 @@ output geometry:
   function space: StructuredColumns
   grid:
     type: regular_lonlat
-    N: 10
+    N: 8
   groups:
   - map jedi names:
       SpeciesConc_NO2: volume_mixing_ratio_of_no2
@@ -36,9 +36,9 @@ states:
     - SpeciesConc_NO2
     - SpeciesConc_CO
     - delp
-    filepath: Data/background/geos_cf_N90_subset.20210801_0000z
+    filepath: Data/background/geos_cf_N10_subset.20210801_0000z
     netcdf extension: nc
     date: '2021-08-01T00:00:00Z'
   output:
-    filepath: testoutput/geos_cf_N10_varcha.20210801_0000z
+    filepath: testoutput/geos_cf_N20_varcha.20210801_0000z
     netcdf extension: nc
