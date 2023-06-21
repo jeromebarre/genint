@@ -718,7 +718,6 @@ void Fields::read(const eckit::Configuration & config) {
   for (const auto & var : vars_.variables()) {
     variableSizes.push_back(geom_->levels(var));
   }
-  oops::Log::info() << "read vars: " << vars_.variables() <<  std::endl;
   // Read fieldset
   util::readFieldSet(geom_->getComm(),
                      geom_->functionSpace(),
@@ -732,22 +731,6 @@ void Fields::write(const eckit::Configuration & config) const {
   // Write fieldset
   util::writeFieldSet(geom_->getComm(), config, fset_);
 
-  // if (geom_->mesh().generated()) {
-  //   // GMSH file path
-  //   std::string gmshfilepath = config.getString("filepath");;
-  //   gmshfilepath.append(".msh");
-  //   oops::Log::info() << "Info     : Writing file: " << gmshfilepath << std::endl;
-  //
-  //   // GMSH configuration
-  //   const auto gmshConfig =
-  //   atlas::util::Config("coordinates", "xyz") | atlas::util::Config("ghost", true) |
-  //   atlas::util::Config("info", true);
-  //   atlas::output::Gmsh gmsh(gmshfilepath, gmshConfig);
-  //
-  //    // Write GMSH
-  //   gmsh.write(geom_->mesh());
-  //   gmsh.write(fset_, fset_[0].functionspace());
-  // }
 }
 // -----------------------------------------------------------------------------
 double Fields::norm() const {

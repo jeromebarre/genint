@@ -37,7 +37,7 @@ states:
     - NO2
     - CO
     - PS
-    filepath: /Users/jeromebarre/backgrounds/CAM-Chem/camchem_N288x192
+    filepath: Data/background/camchem_N288x192_subset
     date: '2021-08-01T00:00:00Z'
   output:
-    filepath: /Users/jeromebarre/backgrounds/CAM-Chem/camchem_N30x20
+    filepath: testoutput/camchem_N30x20

@@ -110,7 +110,6 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   }
   x.fromFieldSet(xfsOut);
 
-
   oops::Log::trace() << "VariableChange::changeVar done" << std::endl;
 }
 

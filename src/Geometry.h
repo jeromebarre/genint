@@ -86,6 +86,9 @@ class GeometryParameters : public oops::Parameters {
   /// Partitioner
   oops::Parameter<std::string> partitioner{"partitioner", "equal_regions", this};
 
+  /// Units
+  oops::Parameter<std::string> units{"units", "degrees", this};
+
   /// Variables groups
   oops::RequiredParameter<std::vector<GroupParameters>> groups{"groups", this};
 

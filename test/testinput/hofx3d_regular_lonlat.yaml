@@ -19,14 +19,15 @@ geometry:
   - map jedi names:
       TropCol_NO2: tropopspheric_column_of_no2
     levels: 1
-    
+
 state:
   state variables:
   - SpeciesConc_NO2
   - SpeciesConc_CO
   - delp
   - TropCol_NO2
-  filepath: /Users/jeromebarre/backgrounds/GEOS-CF/geos_cf_N90.20210801_0000z
+  filepath: Data/background/geos_cf_N90_subset.20210801_0000z
+  netcdf extension: nc
   date: '2020-09-03T21:00:00Z'
 
 observations:
@@ -36,11 +37,11 @@ observations:
       obsdatain:
         engine:
           type: H5File
-          obsfile: /Users/jeromebarre/observations/tropomi_no2_tropo_2020090318_m.nc4
+          obsfile: Data/observation/tropomi_no2_tropo_2020090318_m.nc4
       obsdataout:
         engine:
           type: H5File
-          obsfile: /Users/jeromebarre/observations/tropomi_no2_hofx_geos_2020090318_m.nc
+          obsfile: testoutput/tropomi_no2_hofx_geos_cf_2020090318_m.nc
       simulated variables: [nitrogendioxideColumn]
     obs operator:
       name: ColumnRetrieval

@@ -30,7 +30,9 @@ states:
     - SpeciesConc_NO2
     - SpeciesConc_CO
     - delp
-    filepath: /Users/jeromebarre/backgrounds/GEOS-CF/geos_cf_N90.20210801_0000z
+    filepath: Data/background/geos_cf_N90_subset.20210801_0000z
+    netcdf extension: nc
     date: '2021-08-01T00:00:00Z'
   output:
-    filepath: /Users/jeromebarre/backgrounds/GEOS-CF/geos_cf_N10.20210801_0000z
+    filepath: testoutput/geos_cf_N10.20210801_0000z
+    netcdf extension: nc
