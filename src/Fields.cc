@@ -650,18 +650,6 @@ void Fields::toFieldSet(atlas::FieldSet & fset) const {
 void Fields::fromFieldSet(const atlas::FieldSet & fset) {
   oops::Log::trace() << "Fields::fromFieldSet starting" << std::endl;
 
-  // for (auto field : fset) {
-  //   oops::Log::trace() << field.name() << std::endl;
-  //   auto view = atlas::array::make_view<double, 2>(field);
-  //   for (atlas::idx_t jnode = 0; jnode < field.shape(0); ++jnode) {
-  //     for (atlas::idx_t jlevel = 0; jlevel < field.shape(1); ++jlevel) {
-  //       if (field.name() == "air_pressure_levels" && view(jnode, jlevel)!=0) {
-  //         oops::Log::trace() << view(jnode, jlevel) << std::endl;
-  //       }
-  //     }
-  //   }
-  // }
-
   // Copy internal fieldset (possibly at another resolution)
   fset_ = util::copyFieldSet(fset);
 
