@@ -42,6 +42,7 @@ class State : public util::Printable,
   void read(const eckit::Configuration &);
   void write(const eckit::Configuration &) const;
   double norm() const {return fields_->norm();}
+  double normVar(const std::string &) const;
   const util::DateTime & validTime() const {return fields_->time();}
 
 /// Access to fields
@@ -56,6 +57,9 @@ class State : public util::Printable,
   void deserialize(const std::vector<double> &, size_t &);
 
 /// ATLAS FieldSet accessor
+  void mergeFieldSets(atlas::FieldSet &);
+  void removeFields(atlas::FieldSet &, const oops::Variables &);
+  void updateFields(const oops::Variables &);
   void toFieldSet(atlas::FieldSet &) const;
   void fromFieldSet(const atlas::FieldSet &);
 

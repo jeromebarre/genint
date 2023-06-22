@@ -43,36 +43,24 @@
 namespace genint {
 // -----------------------------------------------------------------------------
 Fields::Fields(const Geometry & geom, const oops::Variables & vars,
-               const oops::Variables & varsf, const util::DateTime & time,
-               const eckit::Configuration & config):
-  geom_(new Geometry(geom)), vars_(vars), varsf_(varsf), time_(time)
+               const util::DateTime & time, const eckit::Configuration & config):
+  geom_(new Geometry(geom)), vars_(vars), time_(time)
 {
   oops::Log::trace() << "Fields::Fields starting" << std::endl;
+
   // Reset ATLAS fieldset
   fset_ = atlas::FieldSet();
-  std::vector<size_t> variableSizes;
-  for (const auto & var : varsf_.variables()) {
-    variableSizes.push_back(geom_->levels(var));
+
+  for (const auto & var : vars_.variables()) {
     // Create field
+
     atlas::Field field = geom_->functionSpace().createField<double>(
       atlas::option::name(var) | atlas::option::levels(geom_->levels(var)));
     fset_.add(field);
   }
 
-  util::readFieldSet(geom_->getComm(),
-                     geom_->functionSpace(),
-                     variableSizes,
-                     varsf_.variables(),
-                     config,
-                     fset_);
-
-  for (const auto & var : vars_.variables()) {
-    if (!fset_.has_field(var)) {
-      atlas::Field field = geom_->functionSpace().createField<double>(
-        atlas::option::name(var) | atlas::option::levels(geom_->levels(var)));
-      fset_.add(field);
-    }
-  }
+  // Set fields to zero
+  this->zero();
 
   oops::Log::trace() << "Fields::Fields done" << std::endl;
 }
@@ -622,6 +610,33 @@ void Fields::diff(const Fields & x1, const Fields & x2) {
   oops::Log::trace() << "Fields::diff done" << std::endl;
 }
 // -----------------------------------------------------------------------------
+void Fields::updateFields(const oops::Variables & newVars) {
+  oops::Log::trace() << "Fields::updateFields starting" << std::endl;
+  for (const auto & var : newVars.variables()) {
+    if (!fset_.has(var)) {
+      atlas::Field field = geom_->functionSpace().createField<double>(
+        atlas::option::name(var) | atlas::option::levels(geom_->levels(var)));
+      oops::Log::trace() << field << std::endl;
+      fset_.add(field);
+      oops::Log::trace() << fset_.field_names() << std::endl;
+    }
+  }
+  oops::Log::trace() << "Fields::updateFields done" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void Fields::removeFields(atlas::FieldSet & fset,
+                          const oops::Variables & vars) {
+  oops::Log::trace() << "Fields::removeFields starting" << std::endl;
+  util::removeFieldsFromFieldSet(fset, vars.variables());
+  oops::Log::trace() << "Fields::removeFields done" << std::endl;
+}
+// -----------------------------------------------------------------------------
+void Fields::mergeFieldSets(atlas::FieldSet & fset) {
+  oops::Log::trace() << "Fields::mergeFieldSets starting" << std::endl;
+  fset = util::shareFields(fset_);
+  oops::Log::trace() << "Fields::mergeFieldSets done" << std::endl;
+}
+// -----------------------------------------------------------------------------
 void Fields::toFieldSet(atlas::FieldSet & fset) const {
   oops::Log::trace() << "Fields::toFieldSet starting" << std::endl;
   // Copy internal fieldset (possibly at another resolution)
@@ -688,15 +703,14 @@ void Fields::fromFieldSet(const atlas::FieldSet & fset) {
 void Fields::read(const eckit::Configuration & config) {
   // Create variableSizes
   std::vector<size_t> variableSizes;
-  for (const auto & var : varsf_.variables()) {
+  for (const auto & var : vars_.variables()) {
     variableSizes.push_back(geom_->levels(var));
   }
-  oops::Log::info() << "read vars: " << varsf_.variables() <<  std::endl;
   // Read fieldset
   util::readFieldSet(geom_->getComm(),
                      geom_->functionSpace(),
                      variableSizes,
-                     varsf_.variables(),
+                     vars_.variables(),
                      config,
                      fset_);
 }
@@ -705,26 +719,28 @@ void Fields::write(const eckit::Configuration & config) const {
   // Write fieldset
   util::writeFieldSet(geom_->getComm(), config, fset_);
 
-  if (geom_->mesh().generated()) {
-    // GMSH file path
-    std::string gmshfilepath = config.getString("filepath");;
-    gmshfilepath.append(".msh");
-    oops::Log::info() << "Info     : Writing file: " << gmshfilepath << std::endl;
-
-    // GMSH configuration
-    const auto gmshConfig =
-    atlas::util::Config("coordinates", "xyz") | atlas::util::Config("ghost", true) |
-    atlas::util::Config("info", true);
-    atlas::output::Gmsh gmsh(gmshfilepath, gmshConfig);
-
-     // Write GMSH
-    gmsh.write(geom_->mesh());
-    gmsh.write(fset_, fset_[0].functionspace());
-  }
 }
 // -----------------------------------------------------------------------------
 double Fields::norm() const {
   return util::normFieldSet(fset_, vars_.variables(), geom_->getComm());
+}
+// -----------------------------------------------------------------------------
+double Fields::normVar(const std::string & var) const {
+  double zz = 0.0;
+  atlas::Field field = fset_[var];
+  if (field.rank() == 2) {
+    auto view = atlas::array::make_view<double, 2>(field);
+    for (atlas::idx_t jnode = 0; jnode < field.shape(0); ++jnode) {
+      for (atlas::idx_t jlevel = 0; jlevel < field.shape(1); ++jlevel) {
+        zz += view(jnode, jlevel)*view(jnode, jlevel);
+      }
+    }
+  }
+  if (geom_->functionSpace().type() != "PointCloud") {
+    geom_->getComm().allReduceInPlace(zz, eckit::mpi::sum());
+  }
+  zz = sqrt(zz);
+  return zz;
 }
 // -----------------------------------------------------------------------------
 void Fields::print(std::ostream & os) const {

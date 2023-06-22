@@ -34,8 +34,7 @@ class Fields : public util::Printable,
 
 // Constructors
   Fields(const Geometry &, const oops::Variables &,
-         const oops::Variables &, const util::DateTime &,
-         const eckit::Configuration &);
+         const util::DateTime &, const eckit::Configuration &);
   Fields(const Geometry &, const oops::Variables &,
          const util::DateTime &);
   Fields(const Fields &, const Geometry &);
@@ -58,6 +57,9 @@ class Fields : public util::Printable,
   void diff(const Fields &, const Fields &);
 
 // ATLAS FieldSet
+  void removeFields(atlas::FieldSet &, const oops::Variables &);
+  void updateFields(const oops::Variables &);
+  void mergeFieldSets(atlas::FieldSet &);
   void toFieldSet(atlas::FieldSet &) const;
   void fromFieldSet(const atlas::FieldSet &);
 
@@ -65,6 +67,7 @@ class Fields : public util::Printable,
   void read(const eckit::Configuration &);
   void write(const eckit::Configuration &) const;
   double norm() const;
+  double normVar(const std::string &) const;
   std::shared_ptr<const Geometry> geometry() const {return geom_;}
   const oops::Variables & variables() const {return vars_;}
   const util::DateTime & time() const {return time_;}
@@ -82,7 +85,6 @@ class Fields : public util::Printable,
   void print(std::ostream &) const override;
   std::shared_ptr<const Geometry> geom_;
   oops::Variables vars_;
-  oops::Variables varsf_;
   util::DateTime time_;
   atlas::FieldSet fset_;
 };

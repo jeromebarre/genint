@@ -80,7 +80,6 @@ Geometry::Geometry(const Parameters_ & params,
   if (!unstructuredGrid_) {
     // Setup partitioner
     partitioner_ = atlas::grid::Partitioner(params.partitioner.value());
-
     // Setup distribution
     distribution_ = atlas::grid::Distribution(grid_, partitioner_);
   }
@@ -153,7 +152,7 @@ Geometry::Geometry(const Parameters_ & params,
     if (group.verticalCoordinate_ == "akbk"){
       const boost::optional<std::vector<double>> &akParams = groupParams.ak.value();
       const boost::optional<std::vector<double>> &bkParams = groupParams.bk.value();
-      for (size_t jj = 0; jj < group.levels_; ++jj) {
+      for (size_t jj = 0; jj < group.levels_ + 1; ++jj) {
         group.ak_.push_back((*akParams)[jj]);
         group.bk_.push_back((*bkParams)[jj]);
       }
@@ -330,8 +329,15 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_), halo_(other.hal
     // Copy number of levels
     group.levels_ = other.groups_[groupIndex].levels_;
 
+    // top level
+    group.pTop_ = other.groups_[groupIndex].pTop_;
+
     // Copy corresponding level for 2D variables (first or last)
     group.lev2d_ = other.groups_[groupIndex].lev2d_;
+
+    // copy ak and bk
+    group.ak_ = other.groups_[groupIndex].ak_;
+    group.bk_ = other.groups_[groupIndex].bk_;
 
     // Copy vertical unit
     group.vunit_ = other.groups_[groupIndex].vunit_;
@@ -389,6 +395,7 @@ void Geometry::latlon(std::vector<double> & lats, std::vector<double> & lons,
   const auto lonlat = atlas::array::make_view<double, 2>(functionSpace_.lonlat());
   const auto ghost = atlas::array::make_view<int, 1>(functionSpace_.ghost());
 
+  //oops::Log::info() << functionSpace_.projection().lonlat() << std::endl;
   // TODO(Algo): Remove/fix the hack below when GeometryData local KD tree needs
   // to be set up correctly (e.g. when UnstructuredInterpolator is used).
   // For now never include halo in the latlon output because halo points from
@@ -417,12 +424,22 @@ void Geometry::latlon(std::vector<double> & lats, std::vector<double> & lons,
   lats.resize(nptsReturned);
   lons.resize(nptsReturned);
 
+
   size_t count = 0;
   for (size_t jj = 0; jj < npts; ++jj) {
     // copy owned points, i.e. points with ghost==?
     if (ghost(jj) == 0 || (includeHalo && comm_.size() > 1)) {
-      lats[count] = lonlat(jj, 1);
-      lons[count] = lonlat(jj, 0);
+      if (functionSpace_.projection().type() == "lambert_conformal_conic") {
+        double pair_xy [] = {lonlat(jj, 0),lonlat(jj, 1)};
+        const auto pair_lonlat = functionSpace_.projection().lonlat(pair_xy);
+        lats[count] = pair_lonlat[1];
+        lons[count] = pair_lonlat[0];
+      } else {
+        lats[count] = lonlat(jj, 1);
+        lons[count] = lonlat(jj, 0);
+      }
+      //oops::Log::info() << lons[count] << " " <<  lats[count] << std::endl;
+      // oops::Log::info() << lonlat(jj,2) << " " << lonlat(jj,3) << std::endl;
       if (lons[count] < 0.0) lons[count] += 360.0;
       count++;
     }
@@ -451,6 +468,8 @@ void Geometry::print(std::ostream & os) const {
     os << prefix << "  Vertical levels: " << std::endl;
     os << prefix << "  - number: " << levels(groupIndex) << std::endl;
     os << prefix << "  - vunit: " << groups_[groupIndex].vunit_ << std::endl;
+    os << prefix << "  - ak: " << groups_[groupIndex].ak_ << std::endl;
+    os << prefix << "  - bk: " << groups_[groupIndex].bk_ << std::endl;
     os << prefix << "  Mask size: " << static_cast<int>(groups_[groupIndex].gmaskSize_*100.0)
        << "%" << std::endl;
   }

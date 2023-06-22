@@ -31,11 +31,10 @@ State::State(const Geometry & resol, const eckit::Configuration & file)
   : fields_()
 {
   oops::Variables vars = oops::Variables(file, "state variables");
-  oops::Variables varsf = oops::Variables(file, "infile variables");
-  fields_.reset(new Fields(resol, vars, varsf, util::DateTime(), file));
+  fields_.reset(new Fields(resol, vars, util::DateTime(), file));
   if (file.has("filepath")) {
     oops::Log::info() << "Info     : Create state from file" << std::endl;
-    //fields_->read(file);
+    fields_->read(file);
   } else {
     oops::Log::info() << "Info     : Create empty state" << std::endl;
     if (file.has("constant value")) {
@@ -73,6 +72,10 @@ State & State::operator+=(const Increment & dx) {
 // -----------------------------------------------------------------------------
 /// I/O and diagnostics
 // -----------------------------------------------------------------------------
+double State::normVar(const std::string & var) const {
+  fields_->normVar(var);
+}
+// -----------------------------------------------------------------------------
 void State::read(const eckit::Configuration & files) {
   fields_->read(files);
   fields_->fields().haloExchange();
@@ -103,6 +106,19 @@ void State::print(std::ostream & os) const {
 }
 // -----------------------------------------------------------------------------
 /// ATLAS FieldSet accessor
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+void State::removeFields(atlas::FieldSet & fset, const oops::Variables & vars) {
+  fields_->removeFields(fset, vars);
+}
+// -----------------------------------------------------------------------------
+void State::mergeFieldSets(atlas::FieldSet & fset) {
+  fields_->mergeFieldSets(fset);
+}
+// -----------------------------------------------------------------------------
+void State::updateFields(const oops::Variables & vars) {
+  fields_->updateFields(vars);
+}
 // -----------------------------------------------------------------------------
 void State::toFieldSet(atlas::FieldSet & fset) const {
   fields_->toFieldSet(fset);

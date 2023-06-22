@@ -14,6 +14,7 @@
 
 #include "oops/mpi/mpi.h"
 #include "oops/util/Logger.h"
+#include "oops/util/FieldSetHelpers.h"
 
 #include "src/Geometry.h"
 #include "src/State.h"
@@ -46,10 +47,10 @@ VariableChange::VariableChange(const Parameters_ & params, const Geometry & geom
   // Add geometry data to vader constructor config
   vaderConstructConfig.addToConfig<double>("air_pressure_at_top_of_atmosphere_model",
                                            geometry.pTop());
-  vaderConstructConfig.addToConfig<std::vector<double>>
-                                  ("sigma_pressure_hybrid_coordinate_a_coefficient", geometry.ak());
-  vaderConstructConfig.addToConfig<std::vector<double>>
-                                  ("sigma_pressure_hybrid_coordinate_b_coefficient", geometry.bk());
+  vaderConstructConfig.addToConfig<std::vector<double>>(
+              "sigma_pressure_hybrid_coordinate_a_coefficient", geometry.ak());
+  vaderConstructConfig.addToConfig<std::vector<double>>(
+              "sigma_pressure_hybrid_coordinate_b_coefficient", geometry.bk());
   vaderConstructConfig.addToConfig<int>("nLevels", geometry.levels());
 
 
@@ -73,28 +74,41 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   // Trace
   oops::Log::trace() << "VariableChange::changeVar starting" << std::endl;
 
-  // get the input variable change from config
-  oops::Variables varsVader = vars_out;
-
-  // replace var names by the long names from the map in config
-  // and create the fieldset with the required vars only
+  // Needed Variables and fieldsets copies
+  oops::Variables varsCha = vars_out;
+  oops::Variables varsState =  x.variables();
+  oops::Variables varsAdd = x.variables();
   atlas::FieldSet xfs;
+  atlas::FieldSet xfsVader;
   x.toFieldSet(xfs);
-  const std::vector<std::string>& varsVec = xfs.field_names();
+
+  // Convert to jedi names using geometry map for variables.
+  // *FIXME* due to current atlas bug the fiedset rename method
+  // is not updating the index map, for this reason we need to create
+  // a new fieldset xfsVarder to get the index map updated
+  // https://github.com/ecmwf/atlas/issues/147
   std::map<std::string,std::string> mapVars = mapVariables_;
+  const std::vector<std::string>& varsVec = xfs.field_names();
   for (auto &var : varsVec) {
     xfs.field(var).rename(mapVars[var]);
+    xfsVader.add(xfs.field(var));
   }
 
-  // call to vader
-  vader_->changeVar(xfs, varsVader);
+  // Call vader and get the out variables names
+  varsAdd += vader_->changeVar(xfsVader, varsCha);
+  varsAdd -= varsState;
 
-  // update the fieldset with the new variables
-  oops::Log::trace() << varsVec << std::endl;
-  for (auto &var : varsVec) {
-    xfs.field(var).rename(var);
+  // Create and update the output fieldset
+  // *FIXME* this step is also necessary because of rename bug
+  // in atlas. Once fixed state should use rename and jedi var names
+  // should be used in the entire application
+  atlas::FieldSet xfsOut;
+  x.toFieldSet(xfsOut);
+  util::removeFieldsFromFieldSet(xfsOut, varsAdd.variables());
+  for (auto &var : varsAdd.variables()) {
+    xfsOut.add(xfsVader.field(var));
   }
-  x.fromFieldSet(xfs);
+  x.fromFieldSet(xfsOut);
 
   oops::Log::trace() << "VariableChange::changeVar done" << std::endl;
 }
@@ -105,28 +119,41 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   // Trace
   oops::Log::trace() << "VariableChange::changeVarInverse starting" << std::endl;
 
-  // get the input variable change from config
-  oops::Variables varsVader = vars_out;
-
-  // replace var names by the long names from the map in config
-  // and create the fieldset with the required vars only
+  // Needed Variables and fieldsets copies
+  oops::Variables varsCha = vars_out;
+  oops::Variables varsState =  x.variables();
+  oops::Variables varsAdd = x.variables();
   atlas::FieldSet xfs;
+  atlas::FieldSet xfsVader;
   x.toFieldSet(xfs);
-  const std::vector<std::string>& varsVec = xfs.field_names();
+
+  // Convert to jedi names using geometry map for variables.
+  // *FIXME* due to current atlas bug the fiedset rename method
+  // is not updating the index map, for this reason we need to create
+  // a new fieldset xfsVarder to get the index map updated
+  // https://github.com/ecmwf/atlas/issues/147
   std::map<std::string,std::string> mapVars = mapVariables_;
+  const std::vector<std::string>& varsVec = xfs.field_names();
   for (auto &var : varsVec) {
     xfs.field(var).rename(mapVars[var]);
+    xfsVader.add(xfs.field(var));
   }
 
-  // call to vader
-  vader_->changeVar(xfs, varsVader);
+  // Call vader and get the out variables names
+  varsAdd += vader_->changeVar(xfsVader, varsCha);
+  varsAdd -= varsState;
 
-  // update the fieldset with the new variables
-  oops::Log::trace() << varsVec << std::endl;
-  for (auto &var : varsVec) {
-    xfs.field(var).rename(var);
+  // Create and update the output fieldset
+  // *FIXME* this step is also necessary because of rename bug
+  // in atlas. Once fixed state should use rename and jedi var names
+  // should be used in the entire application
+  atlas::FieldSet xfsOut;
+  x.toFieldSet(xfsOut);
+  util::removeFieldsFromFieldSet(xfsOut, varsAdd.variables());
+  for (auto &var : varsAdd.variables()) {
+    xfsOut.add(xfsVader.field(var));
   }
-  x.fromFieldSet(xfs);
+  x.fromFieldSet(xfsOut);
 
   oops::Log::trace() << "VariableChange::changeVarInverse done" << std::endl;
 }

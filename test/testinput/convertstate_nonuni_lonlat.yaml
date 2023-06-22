@@ -1,0 +1,43 @@
+input geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    nx: 30
+    ny: 20
+  groups:
+  - map jedi names:
+      NO2: volume_mixing_ratio_of_no2
+      CO: volume_mixing_ratio_of_co
+    levels: 56
+    #vertical coordinate: akbk
+    top pressure: 0.01
+  - map jedi names:
+      PS: surface_air_pressure
+    levels: 1
+
+output geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    N: 10
+  groups:
+  - map jedi names:
+      NO2: volume_mixing_ratio_of_no2
+      CO: volume_mixing_ratio_of_co
+    levels: 56
+    #vertical coordinate: akbk
+    top pressure: 0.01
+  - map jedi names:
+      PS: surface_air_pressure
+    levels: 1
+
+states:
+- input:
+    state variables:
+    - NO2
+    - CO
+    - PS
+    filepath: Data/background/camchem_N30x20_subset
+    date: '2021-08-01T00:00:00Z'
+  output:
+    filepath: testoutput/camchem_N10

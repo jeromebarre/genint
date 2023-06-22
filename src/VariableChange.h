@@ -53,11 +53,11 @@ class VariableChangeParameters : public oops::VariableChangeParametersBase {
        // P: from delp, from ps (and ak/bk)
        {"air_pressure_levels",          {"AirPressureAtInterface_B", "AirPressureAtInterface_A"}},
        // delp: from p
-       {"air_pressure_thickness",       {"AirPressureThickness_A"}},
+       {"air_pressure_thickness",       {"AirPressureThickness_A"}}
        // p: from pe
-       {"air_pressure",                 {"AirPressure_A"}},
+       //{"air_pressure",                 {"AirPressure_A"}},
        // ln(p) from pe
-       {"ln_air_pressure_at_interface", {"LnAirPressureAtInterface_A"}}
+       //{"ln_air_pressure_at_interface", {"LnAirPressureAtInterface_A"}}
      },
      this};
 
