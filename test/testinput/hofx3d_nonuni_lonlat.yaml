@@ -4,8 +4,8 @@ geometry:
   function space: StructuredColumns
   grid:
     type: regular_lonlat
-    nx: 288
-    ny: 192
+    nx: 30
+    ny: 20
   groups:
   - map jedi names:
       NO2: volume_mixing_ratio_of_no2
@@ -55,7 +55,7 @@ state:
   - NO2
   - CO
   - PS
-  filepath: /Users/jeromebarre/backgrounds/CAM-Chem/camchem_N288x192_subset
+  filepath: Data/background/camchem_N30x20_subset
   date: '2020-09-03T21:00:00Z'
 
 observations:
