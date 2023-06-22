@@ -156,12 +156,6 @@ Geometry::Geometry(const Parameters_ & params,
         group.ak_.push_back((*akParams)[jj]);
         group.bk_.push_back((*bkParams)[jj]);
       }
-      // auto maxAk = max_element(group.ak_.begin(),group.ak_.end());
-      // if (*maxAk < 1.0) {
-      //   for(size_t i=0;i<group.ak_.size();++i) {
-      //     group.ak_[i] *= 100000.0;
-      //   }
-      //}
     }
 
    // Vertical unit
@@ -400,9 +394,6 @@ void Geometry::latlon(std::vector<double> & lats, std::vector<double> & lons,
                       const bool includeHaloForRealLife) const {
   const auto lonlat = atlas::array::make_view<double, 2>(functionSpace_.lonlat());
   const auto ghost = atlas::array::make_view<int, 1>(functionSpace_.ghost());
-  oops::Log::info() << "functionSpace_" << std::endl;
-  oops::Log::info() << functionSpace_.projection().type() << std::endl;
-  oops::Log::info() << functionSpace_.projection().spec() << std::endl;
 
   //oops::Log::info() << functionSpace_.projection().lonlat() << std::endl;
   // TODO(Algo): Remove/fix the hack below when GeometryData local KD tree needs
@@ -453,16 +444,6 @@ void Geometry::latlon(std::vector<double> & lats, std::vector<double> & lons,
       count++;
     }
   }
-  double max_lat = *std::max_element(lats.begin(), lats.end());
-  double max_lon = *std::max_element(lons.begin(), lons.end());
-  double min_lat = *std::min_element(lats.begin(), lats.end());
-  double min_lon = *std::min_element(lons.begin(), lons.end());
-  oops::Log::info() << "min_lon min_lat" << std::endl;
-  oops::Log::info() << min_lon << " " << min_lat << std::endl;
-  oops::Log::info() << "max_lon max_lat" << std::endl;
-  oops::Log::info() << max_lon << " " << max_lat << std::endl;
-
-
   ASSERT(count == nptsReturned);
 }
 // -----------------------------------------------------------------------------
