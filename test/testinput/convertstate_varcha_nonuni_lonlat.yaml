@@ -106,6 +106,7 @@ states:
     - CO
     - PS
     filepath: Data/background/camchem_N30x20_subset
+    netcdf extension: nc
     date: '2021-08-01T00:00:00Z'
   output:
     filepath: testoutput/camchem_varcha_N15x10

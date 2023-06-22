@@ -62,7 +62,8 @@ state:
   - no2
   - co
   - PSFC
-  filepath: /Users/jeromebarre/backgrounds/WRF-Chem/wrfout_d01_subset_20230519_000000
+  filepath: Data/background/wrfout_d01_subset_20230519_000000
+  netcdf extension: nc
   date: '2020-09-03T21:00:00Z'
 
 observations:

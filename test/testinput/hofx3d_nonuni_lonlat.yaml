@@ -52,6 +52,7 @@ state:
   - CO
   - PS
   filepath: Data/background/camchem_N30x20_subset
+  netcdf extension: nc
   date: '2020-09-03T21:00:00Z'
 
 observations:
