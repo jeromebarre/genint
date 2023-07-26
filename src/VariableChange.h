@@ -36,6 +36,7 @@
 
 #include "src/Geometry.h"
 #include "src/State.h"
+#include "src/VaderCookbook.h"
 
 namespace genint {
   class Geometry;
@@ -47,22 +48,8 @@ class VariableChangeParameters : public oops::VariableChangeParametersBase {
   OOPS_CONCRETE_PARAMETERS(VariableChangeParameters, oops::VariableChangeParametersBase)
  public:
    oops::Parameter<std::map<std::string, std::vector<std::string>>> vaderCustomCookbook{
-     "vader custom cookbook",
-     // Default VADER cookbook for genint
-     {
-       // P: from delp, from ps (and ak/bk)
-       {"air_pressure_levels",          {"AirPressureAtInterface_B", "AirPressureAtInterface_A"}},
-       // delp: from p
-       {"air_pressure_thickness",       {"AirPressureThickness_A"}}
-       // p: from pe
-       //{"air_pressure",                 {"AirPressure_A"}},
-       // ln(p) from pe
-       //{"ln_air_pressure_at_interface", {"LnAirPressureAtInterface_A"}}
-     },
-     this};
-
+     "vader custom cookbook", vaderGenintCustomCookbook(), this};
    oops::Parameter<vader::VaderParameters> vaderParam{"vader", {}, this};
-
 };
 
 // -----------------------------------------------------------------------------

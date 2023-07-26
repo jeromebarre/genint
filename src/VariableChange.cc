@@ -17,6 +17,7 @@
 #include "oops/util/FieldSetHelpers.h"
 
 #include "src/Geometry.h"
+#include "src/ModelData.h"
 #include "src/State.h"
 #include "src/Constants.h"
 #include "src/VariableChange.h"
@@ -29,36 +30,16 @@ VariableChange::VariableChange(const Parameters_ & params, const Geometry & geom
     : mapVariables_(geometry.mapVariables()), vader_() {
 //  : mapVariables_(geometry.mapVariables()), inputParam_(), vader_() {
 
-
-  // Create vader cookbook
-  vader::cookbookConfigType vaderCustomCookbook =
-                                        params.vaderCustomCookbook;
-
-
-  // Create the VaderConstructConfig object
-  vader::VaderConstructConfig vaderConstructConfig(vaderCustomCookbook);
-
-  // Add all constants to vader constructor config
-  std::vector<std::string> allConstantsNames = getAllConstantsNames();
-  for (std::string allConstantsName : allConstantsNames) {
-    vaderConstructConfig.addToConfig<double>(allConstantsName, getConstant(allConstantsName));
-  }
-
-  // Add geometry data to vader constructor config
-  vaderConstructConfig.addToConfig<double>("air_pressure_at_top_of_atmosphere_model",
-                                           geometry.pTop());
-  vaderConstructConfig.addToConfig<std::vector<double>>(
-              "sigma_pressure_hybrid_coordinate_a_coefficient", geometry.ak());
-  vaderConstructConfig.addToConfig<std::vector<double>>(
-              "sigma_pressure_hybrid_coordinate_b_coefficient", geometry.bk());
-  vaderConstructConfig.addToConfig<int>("nLevels", geometry.levels());
-
-
-  //inputParam_ = params.inputParam;
+  eckit::LocalConfiguration variableChangeConfig = params.toConfiguration();
+  ModelData modelData{geometry};
+  eckit::LocalConfiguration vaderConfig;
+  vaderConfig.set(vader::configCookbookKey,
+                                variableChangeConfig.getSubConfiguration("vader custom cookbook"));
+  vaderConfig.set(vader::configModelVarsKey, modelData.modelData());
 
   // Create vader with genint custom cookbook
   vader_.reset(new vader::Vader(params.vaderParam,
-                                vaderConstructConfig));
+                                vaderConfig));
   // Create the variable change
   //variableChange_.reset(VariableChangeFactory::create(geometry,
   //                                                    params.variableChangeParameters.value()));
