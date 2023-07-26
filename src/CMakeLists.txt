@@ -15,8 +15,11 @@ Increment.cc
 Increment.h
 LinearVariableChange.h
 LinearVariableChange.cc
+ModelData.h
+ModelData.cc
 State.cc
 State.h
+VaderCookbook.h
 VariableChange.h
 VariableChange.cc
 )

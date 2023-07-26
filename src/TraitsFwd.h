@@ -15,6 +15,7 @@ class Covariance;
 class Geometry;
 class Increment;
 class LinearVariableChange;
+class ModelData;
 class State;
 class VariableChange;
 
@@ -26,6 +27,7 @@ struct Traits {
   typedef genint::Geometry             Geometry;
   typedef genint::Increment            Increment;
   typedef genint::LinearVariableChange LinearVariableChange;
+  typedef genint::ModelData            ModelData;
   typedef genint::State                State;
   typedef genint::VariableChange       VariableChange;
 };
