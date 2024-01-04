@@ -17,6 +17,7 @@
 #include "atlas/functionspace.h"
 #include "atlas/grid.h"
 
+#include "eckit/config/Configuration.h"
 #include "eckit/mpi/Comm.h"
 
 #include "oops/mpi/mpi.h"
@@ -102,11 +103,10 @@ class GeometryParameters : public oops::Parameters {
 class Geometry : public util::Printable,
                  private util::ObjectCounter<Geometry> {
  public:
-  typedef GeometryParameters Parameters_;
 
   static const std::string classname() {return "genint::Geometry";}
 
-  Geometry(const Parameters_ &,
+  Geometry(const eckit::Configuration &,
            const eckit::mpi::Comm & comm = oops::mpi::world());
   Geometry(const Geometry &);
 
@@ -118,10 +118,10 @@ class Geometry : public util::Printable,
   const atlas::Mesh mesh() const {return mesh_;}
   const atlas::FunctionSpace & functionSpace() const {return functionSpace_;}
   atlas::FunctionSpace & functionSpace() {return functionSpace_;}
-  const atlas::FieldSet & extraFields() const {return groups_[0].extraFields_;}
-  atlas::FieldSet & extraFields() {return groups_[0].extraFields_;}
-  const atlas::FieldSet & extraFields(const size_t & groupIndex) const
-    {return groups_[groupIndex].extraFields_;}
+  const atlas::FieldSet & fields() const {return groups_[0].fields_;}
+  atlas::FieldSet & fields() {return groups_[0].fields_;}
+  const atlas::FieldSet & fields(const size_t & groupIndex) const
+    {return groups_[groupIndex].fields_;}
   size_t levels(const size_t & groupIndex) const {return groups_[groupIndex].levels_;}
   size_t levels(const std::string & var) const;
   size_t groups() const {return groups_.size();}
@@ -164,7 +164,7 @@ class Geometry : public util::Printable,
     std::vector<double> bk_;
     double pTop_;
     std::map<std::string,std::string> mapVariables_;
-    atlas::FieldSet extraFields_;
+    atlas::FieldSet fields_;
     double gmaskSize_;
   };
   std::vector<groupData> groups_;

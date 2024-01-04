@@ -28,9 +28,13 @@
 // -----------------------------------------------------------------------------
 namespace genint {
 // -----------------------------------------------------------------------------
-Geometry::Geometry(const Parameters_ & params,
+Geometry::Geometry(const eckit::Configuration & config,
                    const eckit::mpi::Comm & comm)
   : comm_(comm), gridType_("no_type"), groups_() {
+
+  GeometryParameters params;
+  params.deserialize(config);
+
   // Initialize eckit communicator for ATLAS
   eckit::mpi::setCommDefault(comm_.name().c_str());
 
@@ -190,37 +194,37 @@ Geometry::Geometry(const Parameters_ & params,
     }
 
     // Fill extra geometry fields
-    group.extraFields_ = atlas::FieldSet();
+    group.fields_ = atlas::FieldSet();
 
     // Vertical unit
     atlas::Field vunit = functionSpace_.createField<double>(
-      atlas::option::name("vunit") | atlas::option::levels(group.levels_));
+      atlas::option::name("vert_coord") | atlas::option::levels(group.levels_));
     auto vunitView = atlas::array::make_view<double, 2>(vunit);
     for (atlas::idx_t jnode = 0; jnode < vunit.shape(0); ++jnode) {
       for (size_t jlevel = 0; jlevel < group.levels_; ++jlevel) {
          vunitView(jnode, jlevel) = group.vunit_[jlevel];
       }
     }
-    group.extraFields_->add(vunit);
+    group.fields_->add(vunit);
 
     // Geographical mask
-    group.extraFields_->add(gmask);
+    group.fields_->add(gmask);
 
     // Halo mask
     if (functionSpace_.type() == "StructuredColumns") {
       // Structured columns
       atlas::functionspace::StructuredColumns fs(functionSpace_);
       atlas::StructuredGrid grid = fs.grid();
-      atlas::Field hmask = fs.createField<int>(atlas::option::name("hmask")
+      atlas::Field owned = fs.createField<int>(atlas::option::name("owned")
         | atlas::option::levels(1));
-      auto hmaskView = atlas::array::make_view<int, 2>(hmask);
+      auto ownedView = atlas::array::make_view<int, 2>(owned);
       auto ghostView = atlas::array::make_view<int, 1>(fs.ghost());
       auto view_i = atlas::array::make_view<int, 1>(fs.index_i());
       auto view_j = atlas::array::make_view<int, 1>(fs.index_j());
       for (atlas::idx_t j = fs.j_begin_halo(); j < fs.j_end_halo(); ++j) {
         for (atlas::idx_t i = fs.i_begin_halo(j); i < fs.i_end_halo(j); ++i) {
           atlas::idx_t jnode = fs.index(i, j);
-          hmaskView(jnode, 0) = ghostView(jnode) > 0 ? 0 : 1;
+          ownedView(jnode, 0) = ghostView(jnode) > 0 ? 0 : 1;
         }
       }
 
@@ -230,42 +234,42 @@ Geometry::Geometry(const Parameters_ & params,
           for (atlas::idx_t i = fs.i_begin_halo(j); i < fs.i_end_halo(j); ++i) {
             atlas::idx_t jnode = fs.index(i, j);
             if (((view_j(jnode) == 1) || (view_j(jnode) == grid.ny())) && (view_i(jnode) != 1)) {
-              hmaskView(jnode, 0) = 0;
+              ownedView(jnode, 0) = 0;
             }
           }
         }
       }
 
       // Add halo mask
-      group.extraFields_->add(hmask);
+      group.fields_->add(owned);
     } else if (functionSpace_.type() == "NodeColumns") {
       // NodeColumns
       if (grid_.name().compare(0, 2, std::string{"CS"}) == 0) {
         // CubedSphere
         atlas::functionspace::NodeColumns fs(functionSpace_);
-        atlas::Field hmask = fs.createField<int>(atlas::option::name("hmask")
+        atlas::Field owned = fs.createField<int>(atlas::option::name("owned")
           | atlas::option::levels(1));
-        auto hmaskView = atlas::array::make_view<int, 2>(hmask);
+        auto ownedView = atlas::array::make_view<int, 2>(owned);
         auto ghostView = atlas::array::make_view<int, 1>(fs.ghost());
-        for (atlas::idx_t jnode = 0; jnode < hmask.shape(0); ++jnode) {
-          hmaskView(jnode, 0) = ghostView(jnode) > 0 ? 0 : 1;
+        for (atlas::idx_t jnode = 0; jnode < owned.shape(0); ++jnode) {
+          ownedView(jnode, 0) = ghostView(jnode) > 0 ? 0 : 1;
         }
 
         // Add halo mask
-        group.extraFields_->add(hmask);
+        group.fields_->add(owned);
       } else {
         // Other NodeColumns
         atlas::functionspace::NodeColumns fs(functionSpace_);
-        atlas::Field hmask = fs.createField<int>(atlas::option::name("hmask")
+        atlas::Field owned = fs.createField<int>(atlas::option::name("owned")
           | atlas::option::levels(1));
-        auto hmaskView = atlas::array::make_view<int, 2>(hmask);
+        auto ownedView = atlas::array::make_view<int, 2>(owned);
         auto ghostView = atlas::array::make_view<int, 1>(fs.ghost());
-        for (atlas::idx_t jnode = 0; jnode < hmask.shape(0); ++jnode) {
-          hmaskView(jnode, 0) = ghostView(jnode) > 0 ? 0 : 1;
+        for (atlas::idx_t jnode = 0; jnode < owned.shape(0); ++jnode) {
+          ownedView(jnode, 0) = ghostView(jnode) > 0 ? 0 : 1;
         }
 
         // Add halo mask
-        group.extraFields_->add(hmask);
+        group.fields_->add(owned);
       }
     }
 
@@ -343,11 +347,11 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_), halo_(other.hal
     group.vunit_ = other.groups_[groupIndex].vunit_;
 
     // Copy extra fields
-    group.extraFields_ = atlas::FieldSet();
-    group.extraFields_->add(other.groups_[groupIndex].extraFields_["vunit"]);
-    group.extraFields_->add(other.groups_[groupIndex].extraFields_["gmask"]);
-    if (other.groups_[groupIndex].extraFields_.has("hmask")) {
-      group.extraFields_->add(other.groups_[groupIndex].extraFields_["hmask"]);
+    group.fields_ = atlas::FieldSet();
+    group.fields_->add(other.groups_[groupIndex].fields_["vert_coord"]);
+    group.fields_->add(other.groups_[groupIndex].fields_["gmask"]);
+    if (other.groups_[groupIndex].fields_.has("owned")) {
+      group.fields_->add(other.groups_[groupIndex].fields_["owned"]);
     }
 
     // Copy mask size
@@ -467,7 +471,7 @@ void Geometry::print(std::ostream & os) const {
     os << prefix << "- Group " << groupIndex << ":" << std::endl;
     os << prefix << "  Vertical levels: " << std::endl;
     os << prefix << "  - number: " << levels(groupIndex) << std::endl;
-    os << prefix << "  - vunit: " << groups_[groupIndex].vunit_ << std::endl;
+    os << prefix << "  - vert_coord: " << groups_[groupIndex].vunit_ << std::endl;
     os << prefix << "  - ak: " << groups_[groupIndex].ak_ << std::endl;
     os << prefix << "  - bk: " << groups_[groupIndex].bk_ << std::endl;
     os << prefix << "  Mask size: " << static_cast<int>(groups_[groupIndex].gmaskSize_*100.0)

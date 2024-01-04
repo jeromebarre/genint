@@ -12,8 +12,13 @@
 
 #include <typeinfo>
 
+#include "oops/base/VariableChangeParametersBase.h"
 #include "oops/mpi/mpi.h"
 #include "oops/util/Logger.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/FieldSetHelpers.h"
 
 #include "src/Geometry.h"
@@ -26,10 +31,13 @@ namespace genint {
 
 // -------------------------------------------------------------------------------------------------
 
-VariableChange::VariableChange(const Parameters_ & params, const Geometry & geometry)
+VariableChange::VariableChange(const eckit::Configuration & config, const Geometry & geometry)
+//VariableChange::VariableChange(const Parameters_ & params, const Geometry & geometry)
     : mapVariables_(geometry.mapVariables()), vader_() {
 //  : mapVariables_(geometry.mapVariables()), inputParam_(), vader_() {
 
+  VariableChangeParameters params;
+  params.deserialize(config);
   eckit::LocalConfiguration variableChangeConfig = params.toConfiguration();
   ModelData modelData{geometry};
   eckit::LocalConfiguration vaderConfig;

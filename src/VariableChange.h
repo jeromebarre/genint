@@ -16,6 +16,7 @@
 
 #include <boost/ptr_container/ptr_vector.hpp>
 
+#include "eckit/config/Configuration.h"
 #include "oops/base/VariableChangeParametersBase.h"
 #include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameter.h"
@@ -60,9 +61,9 @@ class VariableChange : public util::Printable,
  public:
   static const std::string classname() {return "genint::VariableChange";}
 
-  typedef VariableChangeParameters Parameters_;
+  //typedef VariableChangeParameters Parameters_;
 
-  explicit VariableChange(const Parameters_ &, const Geometry &);
+  explicit VariableChange(const eckit::Configuration &, const Geometry &);
   ~VariableChange();
 
 /// Perform transforms
