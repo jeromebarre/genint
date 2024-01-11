@@ -68,7 +68,6 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   oops::Variables varsState =  x.variables();
   oops::Variables varsAdd = x.variables();
   atlas::FieldSet xfs;
-  atlas::FieldSet xfsVader;
   x.toFieldSet(xfs);
 
   // Convert to jedi names using geometry map for variables.
@@ -80,11 +79,10 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   const std::vector<std::string>& varsVec = xfs.field_names();
   for (auto &var : varsVec) {
     xfs.field(var).rename(mapVars[var]);
-    xfsVader.add(xfs.field(var));
   }
 
   // Call vader and get the out variables names
-  varsAdd += vader_->changeVar(xfsVader, varsCha);
+  varsAdd += vader_->changeVar(xfs, varsCha);
   varsAdd -= varsState;
 
   // Create and update the output fieldset
@@ -95,7 +93,7 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   x.toFieldSet(xfsOut);
   util::removeFieldsFromFieldSet(xfsOut, varsAdd.variables());
   for (auto &var : varsAdd.variables()) {
-    xfsOut.add(xfsVader.field(var));
+    xfsOut.add(xfs.field(var));
   }
   x.fromFieldSet(xfsOut);
 
@@ -113,7 +111,6 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   oops::Variables varsState =  x.variables();
   oops::Variables varsAdd = x.variables();
   atlas::FieldSet xfs;
-  atlas::FieldSet xfsVader;
   x.toFieldSet(xfs);
 
   // Convert to jedi names using geometry map for variables.
@@ -125,11 +122,10 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   const std::vector<std::string>& varsVec = xfs.field_names();
   for (auto &var : varsVec) {
     xfs.field(var).rename(mapVars[var]);
-    xfsVader.add(xfs.field(var));
   }
 
   // Call vader and get the out variables names
-  varsAdd += vader_->changeVar(xfsVader, varsCha);
+  varsAdd += vader_->changeVar(xfs, varsCha);
   varsAdd -= varsState;
 
   // Create and update the output fieldset
@@ -140,7 +136,7 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   x.toFieldSet(xfsOut);
   util::removeFieldsFromFieldSet(xfsOut, varsAdd.variables());
   for (auto &var : varsAdd.variables()) {
-    xfsOut.add(xfsVader.field(var));
+    xfsOut.add(xfs.field(var));
   }
   x.fromFieldSet(xfsOut);
 
