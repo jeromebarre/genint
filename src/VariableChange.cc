@@ -12,8 +12,13 @@
 
 #include <typeinfo>
 
+#include "oops/base/VariableChangeParametersBase.h"
 #include "oops/mpi/mpi.h"
 #include "oops/util/Logger.h"
+#include "oops/util/parameters/OptionalParameter.h"
+#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/Parameters.h"
+#include "oops/util/parameters/RequiredParameter.h"
 #include "oops/util/FieldSetHelpers.h"
 
 #include "src/Geometry.h"
@@ -26,10 +31,13 @@ namespace genint {
 
 // -------------------------------------------------------------------------------------------------
 
-VariableChange::VariableChange(const Parameters_ & params, const Geometry & geometry)
+VariableChange::VariableChange(const eckit::Configuration & config, const Geometry & geometry)
+//VariableChange::VariableChange(const Parameters_ & params, const Geometry & geometry)
     : mapVariables_(geometry.mapVariables()), vader_() {
 //  : mapVariables_(geometry.mapVariables()), inputParam_(), vader_() {
 
+  VariableChangeParameters params;
+  params.deserialize(config);
   eckit::LocalConfiguration variableChangeConfig = params.toConfiguration();
   ModelData modelData{geometry};
   eckit::LocalConfiguration vaderConfig;
@@ -60,7 +68,6 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   oops::Variables varsState =  x.variables();
   oops::Variables varsAdd = x.variables();
   atlas::FieldSet xfs;
-  atlas::FieldSet xfsVader;
   x.toFieldSet(xfs);
 
   // Convert to jedi names using geometry map for variables.
@@ -72,11 +79,10 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   const std::vector<std::string>& varsVec = xfs.field_names();
   for (auto &var : varsVec) {
     xfs.field(var).rename(mapVars[var]);
-    xfsVader.add(xfs.field(var));
   }
 
   // Call vader and get the out variables names
-  varsAdd += vader_->changeVar(xfsVader, varsCha);
+  varsAdd += vader_->changeVar(xfs, varsCha);
   varsAdd -= varsState;
 
   // Create and update the output fieldset
@@ -87,7 +93,7 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   x.toFieldSet(xfsOut);
   util::removeFieldsFromFieldSet(xfsOut, varsAdd.variables());
   for (auto &var : varsAdd.variables()) {
-    xfsOut.add(xfsVader.field(var));
+    xfsOut.add(xfs.field(var));
   }
   x.fromFieldSet(xfsOut);
 
@@ -105,7 +111,6 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   oops::Variables varsState =  x.variables();
   oops::Variables varsAdd = x.variables();
   atlas::FieldSet xfs;
-  atlas::FieldSet xfsVader;
   x.toFieldSet(xfs);
 
   // Convert to jedi names using geometry map for variables.
@@ -117,11 +122,10 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   const std::vector<std::string>& varsVec = xfs.field_names();
   for (auto &var : varsVec) {
     xfs.field(var).rename(mapVars[var]);
-    xfsVader.add(xfs.field(var));
   }
 
   // Call vader and get the out variables names
-  varsAdd += vader_->changeVar(xfsVader, varsCha);
+  varsAdd += vader_->changeVar(xfs, varsCha);
   varsAdd -= varsState;
 
   // Create and update the output fieldset
@@ -132,7 +136,7 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   x.toFieldSet(xfsOut);
   util::removeFieldsFromFieldSet(xfsOut, varsAdd.variables());
   for (auto &var : varsAdd.variables()) {
-    xfsOut.add(xfsVader.field(var));
+    xfsOut.add(xfs.field(var));
   }
   x.fromFieldSet(xfsOut);
 
