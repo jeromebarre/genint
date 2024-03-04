@@ -23,8 +23,14 @@ namespace genint {
       {{"potential_temperature",        {"AirPotentialTemperature_B"}},
       // P: from delp, from ps (and ak/bk)
       {"air_pressure_levels",          {"AirPressureAtInterface_B", "AirPressureAtInterface_A"}},
+      // t: from p-pt and pt-base, from pt
+      {"air_temperature",              {"AirTemperature_C", "AirTemperature_A"}},
       // p: from pe
       {"air_pressure",                 {"AirPressure_A"}},
+      // rh: 
+      {"relative_humidity",            {"RelativeHumidity_B"}},
+      // mr: from spfh
+      {"humidity_mixing_ratio",        {"HumidityMixingRatio_A"}},
       // ln(p) from pe
       {"ln_air_pressure_at_interface", {"LnAirPressureAtInterface_A"}},
       // p^kappa from pe and ln(p)

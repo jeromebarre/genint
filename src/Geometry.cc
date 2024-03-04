@@ -138,6 +138,7 @@ Geometry::Geometry(const eckit::Configuration & config,
     for(std::map<std::string,std::string>::iterator it = group.mapVariables_.begin(); it != group.mapVariables_.end(); ++it) {
       oops::Log::info() << it->first << " -> " << it->second << std::endl;
       groupIndex_[it->first] = groupIndex;
+      groupIndex_[it->second] = groupIndex;
     }
 
     // Number of levels
