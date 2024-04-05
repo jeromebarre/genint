@@ -39,11 +39,16 @@ VariableChange::VariableChange(const eckit::Configuration & config, const Geomet
   VariableChangeParameters params;
   params.deserialize(config);
   eckit::LocalConfiguration variableChangeConfig = params.toConfiguration();
+
+  oops::Log::debug() << "variableChangeConfig config: " << variableChangeConfig << std::endl;
+
   ModelData modelData{geometry};
   eckit::LocalConfiguration vaderConfig;
   vaderConfig.set(vader::configCookbookKey,
                                 variableChangeConfig.getSubConfiguration("vader custom cookbook"));
   vaderConfig.set(vader::configModelVarsKey, modelData.modelData());
+
+  oops::Log::debug() << "Vader config: " << vaderConfig << std::endl;
 
   // Create vader with genint custom cookbook
   vader_.reset(new vader::Vader(params.vaderParam,

@@ -32,6 +32,7 @@ class ModelData : public util::Printable {
   const std::vector<double> bk_;
   const int nLevels_;
   const double pTop_;
+  const double baseTheta_;
 };
 
 // -------------------------------------------------------------------------------------------------

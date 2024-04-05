@@ -26,7 +26,8 @@ ModelData::ModelData(const Geometry & geometry) :
     ak_(geometry.ak()),
     bk_(geometry.bk()),
     nLevels_(geometry.levels()),
-    pTop_(geometry.pTop()) {}
+    pTop_(geometry.pTop()),
+    baseTheta_(geometry.baseTheta()) {}
 
 // -------------------------------------------------------------------------------------------------
 
@@ -47,6 +48,7 @@ const eckit::LocalConfiguration ModelData::modelData() const {
   modelData.set("sigma_pressure_hybrid_coordinate_a_coefficient", ak_);
   modelData.set("sigma_pressure_hybrid_coordinate_b_coefficient", bk_);
   modelData.set("nLevels", nLevels_);
+  modelData.set("base_air_potential_temperature", baseTheta_);
 
   return modelData;
 }

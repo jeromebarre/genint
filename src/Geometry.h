@@ -69,6 +69,9 @@ class GroupParameters : public oops::Parameters {
   /// Mask path
   oops::Parameter<std::string> maskPath{"mask path", "../genint/data/landsea.nc", this};
 
+  // Base Potential Temperature
+  oops::OptionalParameter<double> baseTheta{"base theta", this};
+
 };
 
 // -----------------------------------------------------------------------------
@@ -138,6 +141,7 @@ class Geometry : public util::Printable,
   const std::vector<double> & bk() const {return groups_[0].bk_;}
   const double & pTop() const {return groups_[0].pTop_;}
   const size_t & levels() const {return groups_[0].levels_;}
+  const double & baseTheta() const {return groups_[0].baseTheta_;}
 
   // Mapping io var to jedi names
   std::map<std::string,std::string> mapVariables() const;
@@ -163,6 +167,7 @@ class Geometry : public util::Printable,
     std::vector<double> ak_;
     std::vector<double> bk_;
     double pTop_;
+    double baseTheta_;
     std::map<std::string,std::string> mapVariables_;
     atlas::FieldSet fields_;
     double gmaskSize_;
