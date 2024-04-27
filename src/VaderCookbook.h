@@ -30,9 +30,19 @@ namespace genint {
       // rh: 
       {"relative_humidity",            {"RelativeHumidity_B"}},
       // mr: from spfh
-      {"humidity_mixing_ratio",        {"HumidityMixingRatio_A"}},
+      {"humidity_mixing_ratio",        {"HumidityMixingRatio_A", "HumidityMixingRatio_B"}},
+      // sulfmf: 
+      {"mass_fraction_of_sulfate_in_air",  {"SulfateMassFraction_A"}},
+      // spfh: from mr
+      {"specific_humidity",            {"SpecificHumidity_A"}},
       // ln(p) from pe
       {"ln_air_pressure_at_interface", {"LnAirPressureAtInterface_A"}},
+      // qsat
+      {"qsat",                         {"SaturationSpecificHumidity_A"}},
+      // svp
+      {"svp",                          {"SaturationVaporPressure_A"}},
+      // dlsvpdT
+      {"dlsvpdT",                      {"LogDerivativeSaturationVaporPressure_A"}},
       // p^kappa from pe and ln(p)
       {"air_pressure_to_kappa",        {"AirPressureToKappa_A"}},
       // delp: from p

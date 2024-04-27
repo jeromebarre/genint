@@ -69,6 +69,12 @@ class GroupParameters : public oops::Parameters {
   /// Mask path
   oops::Parameter<std::string> maskPath{"mask path", "../genint/data/landsea.nc", this};
 
+  // Base Potential Temperature
+  oops::OptionalParameter<double> baseTheta{"base theta", this};
+
+  // Levels Top-down
+  oops::Parameter<bool> levTopDown{"level top down", "true", this};
+
 };
 
 // -----------------------------------------------------------------------------
@@ -131,7 +137,7 @@ class Geometry : public util::Printable,
   size_t maskLevel(const std::string &, const size_t &) const;
   std::vector<size_t> variableSizes(const oops::Variables & vars) const;
   void latlon(std::vector<double> &, std::vector<double> &, const bool) const;
-  bool levelsAreTopDown() const {return true;}
+  bool levelsAreTopDown() const {return groups_[0].levTopDown_;}
 
   // Functions to retrieve geometry features
   const std::vector<double> & ak() const {return groups_[0].ak_;}
@@ -166,6 +172,7 @@ class Geometry : public util::Printable,
     std::map<std::string,std::string> mapVariables_;
     atlas::FieldSet fields_;
     double gmaskSize_;
+    bool levTopDown_;
   };
   std::vector<groupData> groups_;
 };

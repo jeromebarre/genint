@@ -65,7 +65,7 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
 
   // Needed Variables and fieldsets copies
   oops::Variables varsCha = vars_out;
-  oops::Variables varsState =  x.variables();
+  oops::Variables varsState = x.variables();
   oops::Variables varsAdd = x.variables();
   atlas::FieldSet xfs;
   x.toFieldSet(xfs);
@@ -95,7 +95,10 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   for (auto &var : varsAdd.variables()) {
     xfsOut.add(xfs.field(var));
   }
+
   x.fromFieldSet(xfsOut);
+  oops::Log::info() << "x from xfsOut:" << std::endl;
+  oops::Log::info() << x << std::endl;
 
   oops::Log::trace() << "VariableChange::changeVar done" << std::endl;
 }
