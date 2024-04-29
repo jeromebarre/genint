@@ -51,6 +51,8 @@ geometry:
 
     levels: 42
     top pressure: 50
+    base theta: 290.
+    level top down: false
   - map jedi names:
       air_pressure_levels: air_pressure_levels
     levels: 43
