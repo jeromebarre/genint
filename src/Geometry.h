@@ -143,6 +143,7 @@ class Geometry : public util::Printable,
   const std::vector<double> & ak() const {return groups_[0].ak_;}
   const std::vector<double> & bk() const {return groups_[0].bk_;}
   const double & pTop() const {return groups_[0].pTop_;}
+  const double & baseTheta() const {return groups_[0].baseTheta_;}
   const size_t & levels() const {return groups_[0].levels_;}
 
   // Mapping io var to jedi names
@@ -169,6 +170,7 @@ class Geometry : public util::Printable,
     std::vector<double> ak_;
     std::vector<double> bk_;
     double pTop_;
+    double baseTheta_;
     std::map<std::string,std::string> mapVariables_;
     atlas::FieldSet fields_;
     double gmaskSize_;
