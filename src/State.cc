@@ -45,6 +45,7 @@ State::State(const Geometry & resol, const eckit::Configuration & file)
   }
   const util::DateTime vt(file.getString("date"));
   fields_->time() = vt;
+  // this->print(oops::Log::info());
   oops::Log::trace() << "State::State created." << std::endl;
 }
 // -----------------------------------------------------------------------------

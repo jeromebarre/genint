@@ -752,7 +752,8 @@ void Fields::print(std::ostream & os) const {
   }
   os << prefix << "Fields:";
   const auto ghostView = atlas::array::make_view<int, 1>(geom_->functionSpace().ghost());
-  for (const auto & var : vars_.variables()) {
+  for (const auto & var : fset_.field_names()) {
+  // for (const auto & var : vars_.variables()) {
     const auto gmaskView = atlas::array::make_view<int, 2>(
       geom_->fields(geom_->groupIndex(var)).field("gmask"));
     os << std::endl;

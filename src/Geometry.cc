@@ -153,6 +153,18 @@ Geometry::Geometry(const eckit::Configuration & config,
     // Top Pressure
     group.pTop_ = groupParams.pTop.value();
 
+    // Level Top Down
+    group.levTopDown_ = groupParams.levTopDown.value();
+
+    // Base air potential temperature
+    const boost::optional<double> &pt_base = groupParams.baseTheta.value();
+    if (pt_base != boost::none) {
+      group.baseTheta_ = *pt_base; 
+    } else {
+      group.baseTheta_ = 0.;
+    }
+    oops::Log::debug() << "base theta= " << group.baseTheta_ << std::endl;
+
     // Sigma pressure coefficients
     if (group.verticalCoordinate_ == "akbk"){
       const boost::optional<std::vector<double>> &akParams = groupParams.ak.value();
@@ -336,6 +348,12 @@ Geometry::Geometry(const Geometry & other) : comm_(other.comm_), halo_(other.hal
 
     // top level
     group.pTop_ = other.groups_[groupIndex].pTop_;
+
+    // Level Top Down
+    group.levTopDown_ = other.groups_[groupIndex].levTopDown_;
+
+    // base air potential temperature
+    group.baseTheta_ = other.groups_[groupIndex].baseTheta_;
 
     // Copy corresponding level for 2D variables (first or last)
     group.lev2d_ = other.groups_[groupIndex].lev2d_;
