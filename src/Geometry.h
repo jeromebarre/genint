@@ -73,7 +73,7 @@ class GroupParameters : public oops::Parameters {
   oops::OptionalParameter<double> baseTheta{"base theta", this};
 
   // Levels Top-down
-  oops::Parameter<bool> levTopDown{"level top down", "true", this};
+  oops::Parameter<bool> levTopDown{"level top down", true, this};
 
 };
 
